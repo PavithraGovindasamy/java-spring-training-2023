@@ -1,0 +1,18 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="carService" class="com.example.demo.CarService" />
+
+
+    <bean id="bikeService" class="com.example.demo.BikeService" />
+      <!--Injecting the bikeService!-->
+    <bean id="restController" class="com.example.demo.rest.RestController">
+        <constructor-arg>
+            <ref bean="bikeService" />
+        </constructor-arg>
+    </bean>
+
+
+</beans>

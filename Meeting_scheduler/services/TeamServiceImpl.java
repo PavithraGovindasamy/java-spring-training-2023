@@ -35,7 +35,6 @@ public class TeamServiceImpl implements TeamService{
     @Override
     public void addEmployeeToTeam(int employeeId, int teamId) {
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
-
       Teams team = teamsRepository.findById(teamId).orElse(null);
 
 

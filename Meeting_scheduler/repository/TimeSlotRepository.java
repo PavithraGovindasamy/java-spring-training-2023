@@ -22,14 +22,11 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
 
 
 
+    List<TimeSlot> findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+            Rooms rooms, String date, LocalTime endTime, LocalTime startTime);
 
-    List<TimeSlot> findByDateAndRoomsAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
-            String date, Rooms rooms, LocalTime startTime, LocalTime endTime
-    );
+    List<TimeSlot> findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+            Teams teams, String date, LocalTime endTime, LocalTime startTime);
 
-    @Override
-    void deleteById(Integer integer);
-
-    List<TimeSlot> findByRoomsAndDateAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(Rooms rooms, String date, LocalTime startTime, LocalTime endTime);
 }
 

@@ -1,10 +1,11 @@
 package com.sirius.springenablement.demo.entity;
-
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that which basic column for employee
+ */
 @Entity
 @Table(name = "employee")
 public class Employee {
@@ -25,7 +26,6 @@ public class Employee {
     private String email;
 
     public Employee() {
-        // Default constructor with no arguments
     }
 
     public Employee(String firstName, String lastName, String email) {

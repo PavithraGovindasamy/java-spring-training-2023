@@ -1,12 +1,11 @@
 package com.sirius.springenablement.demo.entity;
-
 import jakarta.persistence.*;
-
-import java.sql.Time;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
+/**
+ * class which has basic column of time_slots
+ */
 @Entity
 @Table(name = "time_slot")
 public class TimeSlot {

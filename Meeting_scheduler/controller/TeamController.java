@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+
+/**
+ * Class which has basic functionalities basic crud operations for a team
+ */
 
 @RestController
 @RequestMapping("/teams")
@@ -21,6 +23,12 @@ public class TeamController {
 
     @Autowired
     public EmployeeService employeeService;
+
+    /**
+     * Method which get the team details based on teamId
+     * @param teamId
+     * @return
+     */
 
     // Getting the teams details by ID
     @GetMapping("/{teamId}")
@@ -38,39 +46,48 @@ public class TeamController {
         }
     }
 
+    /**
+     * Method which add an  employee to a team
+     * @param teamId
+     * @param employeeId
+     * @return
+     */
+
      @PostMapping("/{teamId}/addEmployee/{employeeId}")
         public ResponseEntity<String> addEmployeeToTeam(@PathVariable int teamId, @PathVariable int employeeId) {
-        System.out.println("ey");
-//
-//         Optional<Teams> teams=teamService.findById(teamId);
-//         if(teams.isPresent()){
-//             Teams dbteams = teams.get();
-//           Employee employee=employeeService.findById(employeeId).orElse(null);
-//
-//             dbteams.setEmployee(Collections.singletonList(employee));
-//
-//         }
             teamService.addEmployeeToTeam(employeeId, teamId);
-
-
             return ResponseEntity.ok("Employee added to team");
         }
 
-    // Adding a new team
+    /**
+     * Method which adds new team
+     * @param teams
+     * @return
+     */
+
     @PostMapping("/addTeams")
     public Teams addTeams(@RequestBody Teams teams){
         Teams dbTeams=teamService.save(teams);
         return dbTeams;
     }
 
-    // updating a new Team
+    /**
+     * Method which updates the team details
+     * @param teams
+     * @return
+     */
+
     @PutMapping("/updateTeams")
     public  Teams updateTeams(@RequestBody Teams teams){
         Teams updateTeams=teamService.save(teams);
         return  updateTeams;
     }
 
-    // Deleting a team by id
+    /**
+     * Method which deletes a team
+     * @param teamId
+     * @return
+     */
 
 
     @DeleteMapping("/delete/{teamId}")

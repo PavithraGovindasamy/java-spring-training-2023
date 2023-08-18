@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+/**
+ * Class which has basic columns of rooms
+ */
 @Entity
 @Table(name="rooms")
 public class Rooms {
@@ -18,20 +21,30 @@ public class Rooms {
     private  String roomName;
 
     @Column(name = "room_capacity")
-    private String roomCapacity;
+    private int roomCapacity;
 
-
+    /**
+     * Empty construtor
+     */
     public  Rooms(){
 
     }
 
-    public Rooms(String roomName, String roomCapacity) {
+    /**
+     * Constructor which gets basic details of rooms
+     * @param roomName
+     * @param roomCapacity
+     */
+
+    public Rooms(String roomName, int roomCapacity) {
 
         this.roomName = roomName;
         this.roomCapacity = roomCapacity;
     }
 
-    //mapping with time_slot table
+    /**
+     * Mapping with time_slots
+     */
 
     @ManyToMany(fetch=FetchType.LAZY
             ,cascade = {CascadeType.DETACH,CascadeType.MERGE,
@@ -67,11 +80,11 @@ public class Rooms {
         this.roomName = roomName;
     }
 
-    public String getRoomCapacity() {
+    public int getRoomCapacity() {
         return roomCapacity;
     }
 
-    public void setRoomCapacity(String roomCapacity) {
+    public void setRoomCapacity(int roomCapacity) {
         this.roomCapacity = roomCapacity;
     }
 

@@ -5,9 +5,11 @@ import com.sirius.springenablement.demo.entity.Teams;
 import com.sirius.springenablement.demo.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+/**
+ ** Class which has basic functionalities basic crud operations for a employee
+ */
 
 @RestController
 @RequestMapping("/employees")
@@ -16,18 +18,24 @@ public class EmployeeController {
     @Autowired
     public EmployeeService employeeService;
 
+    /**
+     * Method which fetches all employees
+     * @return
+     */
     @GetMapping("/allEmployees")
     public List<Employee> getAllEmployees(){
         return employeeService.findAll();
     }
 
-    // fetching a employee
+    /**
+     * Method which fetches a employee
+     * @param employeeId
+     * @return
+     */
+
     @GetMapping("/{employeeId}")
     public String getEmployeeByID(@PathVariable int employeeId) {
-
         Optional<Employee> optionalEmployee = employeeService.findById(employeeId);
-
-
         if (optionalEmployee.isPresent()) {
             Employee employee = optionalEmployee.get();
             String response = "Employee: " + employee.getFirstName() + " " + employee.getLastName() + "\n" +"ID :" + employee.getId();
@@ -41,19 +49,25 @@ public class EmployeeController {
     }
 
 
-    // adding a new Employee
+    /**
+     * Method that implements to Add a employee
+     * @param employee
+     * @return
+     */
+
     @PostMapping("/addEmployees")
-    public Employee addEmployee(@RequestBody Employee employee){
-
+    public String addEmployee(@RequestBody Employee employee){
         Employee dbEmployee=employeeService.save(employee);
-
-        Teams teams=new Teams("Digitial velocity",12);
-//        dbEmployee.setTeams((List<Teams>) teams);
-        return dbEmployee;
+        return "Employed added";
     }
 
 
-    // updating a new Employee
+    /**
+     * Method which updates details of employee
+     * @param employeeId
+     * @param employee
+     * @return
+     */
     @PutMapping("/updateEmployee/{employeeId}")
     public String updateEmployee(@PathVariable int employeeId, @RequestBody Employee employee){
         Optional<Employee> optionalEmployee = employeeService.findById(employeeId);
@@ -66,8 +80,11 @@ public class EmployeeController {
         return "employee not found";
     }
 
-    // Deleting a team by id
-
+    /**
+     * Method which deletes a employee
+     * @param employeeId
+     * @return
+     */
     @DeleteMapping("/{employeeId}")
     public String deleteEmployee(@PathVariable int employeeId){
         Optional<Employee> deleteEmployee=employeeService.findById(employeeId);

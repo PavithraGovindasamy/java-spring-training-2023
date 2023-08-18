@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Class which has basic columns of teams
+ */
 @Entity
 @Table(name = "teams")
 public class Teams {

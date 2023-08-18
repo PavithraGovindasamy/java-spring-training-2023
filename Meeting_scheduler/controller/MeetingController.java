@@ -1,5 +1,4 @@
 package com.sirius.springenablement.demo.controller;
-
 import com.sirius.springenablement.demo.entity.Employee;
 import com.sirius.springenablement.demo.entity.Rooms;
 import com.sirius.springenablement.demo.entity.Teams;
@@ -10,12 +9,14 @@ import com.sirius.springenablement.demo.services.EmployeeService;
 import com.sirius.springenablement.demo.services.TeamService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,53 @@ public class MeetingController {
     @Autowired
     private RoomsRepository roomsRepository;
 
+    @GetMapping("/availableRooms")
+    public String getAvailableRooms(@RequestBody TimeSlot bookingRequest, @RequestParam int requiredCapacity) {
+            List<Rooms> availableRooms = getAvailableRoomsNow(bookingRequest.getDate(), bookingRequest.getStart_time(), bookingRequest.getEnd_time(), requiredCapacity);
+            return"okay " + availableRooms;
+    }
 
+
+    private List<Rooms> getAvailableRoomsNow(String date, LocalTime startTime, LocalTime endTime, int requiredCapacity) {
+        List<Rooms> availableRoomsNow = new ArrayList<>();
+        List<Rooms> allRooms = roomsRepository.findAll();
+        List<Rooms> nearestCapacityRooms = new ArrayList<>();
+
+        for (Rooms room : allRooms) {
+            if (!roomAvailable(room, date, startTime, endTime)) {
+             System.out.println("Not available");
+            }
+            availableRoomsNow.add(room);
+            if (room.getRoomCapacity() >= requiredCapacity) {
+                System.out.println(room);
+                nearestCapacityRooms.add(room);
+            }
+        }
+        if (availableRoomsNow.isEmpty() && !nearestCapacityRooms.isEmpty()) {
+            availableRoomsNow = nearestCapacityRooms;
+        }
+
+        availableRoomsNow.sort(Comparator.comparingInt(Rooms::getRoomCapacity));
+
+        return availableRoomsNow;
+
+
+
+    }
+
+
+
+
+    /**
+     * Method which books meeting for a employee
+     * @param bookingRequest
+     * @param employeeId
+     * @param bookingType
+     * @param teamId
+     * @param roomName
+     * @param collaborators
+     * @return
+     */
 
     @PostMapping("/bookMeeting/{employeeId}/{bookingType}")
     @Transactional
@@ -46,8 +93,7 @@ public class MeetingController {
         if (employee == null) {
             return "Employee not found.";
         }
-
-        if ("TEAM".equals(bookingType)) {
+        if ("TEAM".equals(bookingType) ) {
             Teams teams=teamService.findById(teamId).orElse(null);
             if (teams == null) {
                 return "Team not found.";
@@ -83,6 +129,14 @@ public class MeetingController {
         return bookingType;
     }
 
+    /**
+     * Method which books team for an employee
+     * @param employee
+     * @param teams
+     * @param meeting
+     * @param roomName
+     * @return
+     */
     private String bookMeetingForTeam(Employee employee, Teams teams, TimeSlot meeting, String roomName) {
 
         Rooms rooms = roomsRepository.findByRoomName(roomName);
@@ -111,7 +165,15 @@ public class MeetingController {
         return "Meeting booked for team." + "Unavailable members" + notAvailableMembers;
     }
 
-    // booking for collaboration
+    /**
+     *
+     * Method which books meeting for a collaboration in a company
+     * @param employee
+     * @param meeting
+     * @param roomName
+     * @param collaborators
+     * @return
+     */
     private String bookMeetingForCollaboration(Employee employee, TimeSlot meeting, String roomName, Teams collaborators) {
         Rooms rooms = roomsRepository.findByRoomName(roomName);
         if (rooms == null) {
@@ -137,11 +199,19 @@ public class MeetingController {
         return "Meeting booked for collaboration.";
     }
 
+    /**
+     * Method that checks whether a particular member is available or not
+     * @param teams
+     * @param date
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private List<Employee> notAvailableMembers(Teams teams, String date, LocalTime startTime, LocalTime endTime) {
 
         List<Employee> unavailableMembers = new ArrayList<>();
         for (Employee teamMember : teams.getEmployee()) {
-            List<TimeSlot> bookedSlots = timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+            List<TimeSlot> bookedSlots = timeSlotRepository.findByTeamsAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
                     teams, date, endTime, startTime
             );
             if (!bookedSlots.isEmpty()) {
@@ -152,8 +222,17 @@ public class MeetingController {
         return unavailableMembers;
     }
 
+    /**
+     * Method which checks whether that particular room is available or not
+     * @param rooms
+     * @param date
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+
     private boolean roomAvailable(Rooms rooms, String date, LocalTime startTime, LocalTime endTime) {
-        List<TimeSlot> booked = timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+        List<TimeSlot> booked = timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
                 rooms, date, endTime, startTime
         );
         if (!booked.isEmpty()) {
@@ -162,7 +241,11 @@ public class MeetingController {
         return true;
     }
 
-
+    /**
+     *
+     * @param timeSlotId-- Deleting the meeting details
+     * @return
+     */
 
     @DeleteMapping("/delete/{timeSlotId}")
     public  String deleteMeeting(@PathVariable int  timeSlotId){
@@ -173,16 +256,32 @@ public class MeetingController {
         LocalTime newTime = start_time.minus(30, ChronoUnit.MINUTES);
         if (currentTime.isBefore(newTime)) {
             timeSlotRepository.deleteById(timeSlotId);
-            return "Meeting cancelled ";
+            return "Meeting cancelled";
         } else {
 
            return "Current time is not before 30 minutes before start time.";
         }
+    }
 
+    /**
+     *
+     * @param timeSlotId
+     * @param bookingRequest -> updating the details of meeting
+     * @return
+     */
 
+    @PutMapping("/update/{timeSlotId}")
+    public  String updateMeeting(@PathVariable int timeSlotId,@RequestBody TimeSlot bookingRequest){
 
-
-
+        TimeSlot timeSlot=timeSlotRepository.findById(timeSlotId).orElse(null);
+        timeSlot.setId(timeSlotId);
+        timeSlot.setEnd_time(bookingRequest.getEnd_time());
+        timeSlot.setStart_time(bookingRequest.getStart_time());
+        timeSlot.setDate(bookingRequest.getDate());
+        timeSlot.setDescription(bookingRequest.getDescription());
+        timeSlot.setEmployee(timeSlot.getEmployee());
+        timeSlotRepository.save(timeSlot);
+        return "Updated meeting details";
     }
 
 

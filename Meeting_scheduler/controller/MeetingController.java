@@ -35,13 +35,26 @@ public class MeetingController {
     @Autowired
     private RoomsRepository roomsRepository;
 
+    /**
+     * Method which returns the available rooms
+     * @param bookingRequest
+     * @param requiredCapacity
+     * @return
+     */
     @GetMapping("/availableRooms")
     public String getAvailableRooms(@RequestBody TimeSlot bookingRequest, @RequestParam int requiredCapacity) {
             List<Rooms> availableRooms = getAvailableRoomsNow(bookingRequest.getDate(), bookingRequest.getStart_time(), bookingRequest.getEnd_time(), requiredCapacity);
             return"okay " + availableRooms;
     }
 
-
+    /**
+     * Method which sorts the available rooms
+     * @param date
+     * @param startTime
+     * @param endTime
+     * @param requiredCapacity
+     * @return
+     */
     private List<Rooms> getAvailableRoomsNow(String date, LocalTime startTime, LocalTime endTime, int requiredCapacity) {
         List<Rooms> availableRoomsNow = new ArrayList<>();
         List<Rooms> allRooms = roomsRepository.findAll();
@@ -62,10 +75,7 @@ public class MeetingController {
         }
 
         availableRoomsNow.sort(Comparator.comparingInt(Rooms::getRoomCapacity));
-
         return availableRoomsNow;
-
-
 
     }
 

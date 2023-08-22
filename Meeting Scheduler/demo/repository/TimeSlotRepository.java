@@ -17,9 +17,6 @@ import java.util.List;
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     List<TimeSlot> findByRoomsAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
             Rooms rooms, String date, LocalTime endTime, LocalTime startTime);
-
-    List<TimeSlot> findByTeamsAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
-            Teams teams, String date, LocalTime endTime, LocalTime startTime);
-
+    List<TimeSlot> findByEmployeeAndDateAndStartTimeLessThanAndEndTimeGreaterThan(Employee teamMember, String date, LocalTime endTime, LocalTime startTime);
 }
 

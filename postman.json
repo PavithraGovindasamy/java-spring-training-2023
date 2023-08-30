@@ -1,0 +1,343 @@
+{
+	"info": {
+		"_postman_id": "a4da5176-72d7-4696-93e2-9bf9c12ffc4e",
+		"name": "Meeting_scheduler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26581089",
+		"_collection_link": "https://dark-firefly-674529.postman.co/workspace/Workspace~8f5ef889-4b10-44d4-9cbb-872fa67cf85b/collection/26581089-a4da5176-72d7-4696-93e2-9bf9c12ffc4e?action=share&source=collection_link&creator=26581089"
+	},
+	"item": [
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "Employee Create Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"suji1\",\n    \"lastName\": \"g\",\n    \"email\": \"emp@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/employees/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{ \"id\":\"1\",\n  \"firstName\":\"hhvh\",\n  \"lastName\":\"g\",\n  \"email\":\"pavi@gmail.com\"\n  \n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees",
+								""
+							],
+							"query": [
+								{
+									"key": "collaborators",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "collaborators",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "jhgdfjk",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "Delete Teams",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8000/teams/delete/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"teams",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Teams",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":1,\n    \"teamName\":\"SE\",\n    \"teamCapacity\":10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8000/teams/updateTeams",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"teams",
+								"updateTeams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Employee to Teams",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8000/teams/3/addEmployee/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"teams",
+								"3",
+								"addEmployee",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"teamCapacity\":8,\n    \"teamName\":\"Adobe\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/teamses",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"teamses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Meeting Details",
+			"item": [
+				{
+					"name": "Book Meeting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"timeSlot\": {\n      \"date\": \"2023-08-29\",\n    \"start_time\": \"09:00:00\",\n    \"end_time\": \"10:00:00\",\n    \"description\":\"new\"\n  },\n  \"employeeId\": 1,\n  \"bookingType\": \"COLLABORATION\",\n  \"teamId\": 1,\n  \"roomName\": \"Chennai\",\n  \"collaborators\": [1,5]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/meeting/bookMeeting",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"meeting",
+								"bookMeeting"
+							],
+							"query": [
+								{
+									"key": "roomName",
+									"value": "Tanjore",
+									"disabled": true
+								},
+								{
+									"key": "teamId",
+									"value": "12",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Updating Meeting Details",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"timeSlotId\": 12,\n  \"bookingRequest\": {\n      \"date\": \"2023-12-09\",\n    \"start_time\": \"09:00:00\",\n    \"end_time\": \"10:00:00\",\n    \"description\":\"new7\",\n    \"employeeId\": 4,\n    \"bookingType\": \"team\",\n    \"teamId\": 7\n  },\n      \"roomName\": \"London\",\n  \"addedEmployees\": [1, 18],\n  \"removedEmployees\": [101]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/meeting/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"meeting",
+								""
+							],
+							"query": [
+								{
+									"key": "roomName",
+									"value": "Chennai",
+									"disabled": true
+								},
+								{
+									"key": "addedEmployees",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "addedEmployees",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "removedEmployees",
+									"value": "4",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete meeting",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/meeting/9",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"meeting",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Available rooms",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

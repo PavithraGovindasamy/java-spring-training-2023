@@ -1,5 +1,6 @@
 package com.sirius.springenablement.ticket_booking.entity;
 import  jakarta.persistence.*;
+import com.sirius.springenablement.ticket_booking.entity.*;
 @Table
 @Entity(name = "bookings")
 public class Bookings {
@@ -34,27 +35,27 @@ public class Bookings {
         this.id = id;
     }
 
-    public com.sirius.springenablement.ticket_booking.entity.Users getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(com.sirius.springenablement.ticket_booking.entity.Users user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 
-    public com.sirius.springenablement.ticket_booking.entity.Shows getShow() {
+    public Shows getShow() {
         return show;
     }
 
-    public void setShow(com.sirius.springenablement.ticket_booking.entity.Shows show) {
+    public void setShow(Shows show) {
         this.show = show;
     }
 
-    public com.sirius.springenablement.ticket_booking.entity.Tickets getTicket() {
+    public Tickets getTicket() {
         return ticket;
     }
 
-    public void setTicket(com.sirius.springenablement.ticket_booking.entity.Tickets ticket) {
+    public void setTicket(Tickets ticket) {
         this.ticket = ticket;
     }
 

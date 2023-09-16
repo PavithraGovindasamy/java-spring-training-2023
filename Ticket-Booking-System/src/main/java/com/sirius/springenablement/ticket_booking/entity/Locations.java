@@ -1,13 +1,14 @@
 package com.sirius.springenablement.ticket_booking.entity;
 import  jakarta.persistence.*;
+import lombok.Data;
 
 @Entity(name = "locations")
-@lombok.Data
+@Data
 @Table
 public class Locations {
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    @jakarta.persistence.Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
 

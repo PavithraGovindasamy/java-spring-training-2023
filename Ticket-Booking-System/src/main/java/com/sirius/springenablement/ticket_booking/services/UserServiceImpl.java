@@ -5,7 +5,11 @@ import com.sirius.springenablement.ticket_booking.repository.UserRepository;
 import  java.time.LocalDate;
 import com.sirius.springenablement.ticket_booking.dto.UserDto;
 import com.sirius.springenablement.ticket_booking.entity.Roles;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.User;
+import  java.util.Optional;
 @Service
 public class UserServiceImpl  {
     @Autowired
@@ -39,16 +43,16 @@ public class UserServiceImpl  {
         return java.time.Period.between(dateOfBirth, today).getYears() >= 18;
     }
 
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws org.springframework.security.core.userdetails.UsernameNotFoundException {
-        java.util.Optional<com.sirius.springenablement.ticket_booking.entity.Users> userOptional = userRepository.findByEmail(username);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+       Optional<Users> userOptional = userRepository.findByEmail(username);
 
         if (userOptional.isEmpty()) {
-            throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found with email: " + username);
+            throw new UsernameNotFoundException("User not found with email: " + username);
         }
 
         Users user = userOptional.get();
 
-        return org.springframework.security.core.userdetails.User
+        return User
                 .withUsername(username)
                 .password(user.getPassword())
                 .authorities(user.getRole().toString())

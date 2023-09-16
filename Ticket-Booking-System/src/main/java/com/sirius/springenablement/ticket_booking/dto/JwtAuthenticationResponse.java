@@ -3,7 +3,7 @@ public class JwtAuthenticationResponse {
     private String accessToken;
 
 
-    // Default constructor
+
     public JwtAuthenticationResponse() {}
 
 

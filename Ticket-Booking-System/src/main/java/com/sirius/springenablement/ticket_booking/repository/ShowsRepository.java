@@ -8,6 +8,6 @@ public interface ShowsRepository extends JpaRepository<Shows, Long> {
 
     
 
-    java.util.List<com.sirius.springenablement.ticket_booking.entity.Shows> findByDate(LocalDate bookingDate);
+    java.util.List<Shows> findByDate(LocalDate bookingDate);
 
 }

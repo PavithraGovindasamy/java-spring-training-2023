@@ -10,6 +10,8 @@ import  com.sirius.springenablement.ticket_booking.services.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import com.sirius.springenablement.ticket_booking.dto.ApiResponseDto;
 import com.sirius.springenablement.ticket_booking.dto.*;
+import  com.sirius.springenablement.ticket_booking.services.JwtService;
+import com.sirius.springenablement.ticket_booking.services.BookingRequestDto;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -36,13 +38,13 @@ public class UserController {
 
 
     @Autowired
-    private com.sirius.springenablement.ticket_booking.services.JwtService jwtService;
+    private JwtService jwtService;
 
 
 
 
         @PostMapping("/book")
-        public ResponseEntity<BookingResponseDto> bookTicket(@RequestBody com.sirius.springenablement.ticket_booking.services.BookingRequestDto bookingRequestDto) {
+        public ResponseEntity<BookingResponseDto> bookTicket(@RequestBody BookingRequestDto bookingRequestDto) {
             try {
                 BookingResponseDto bookingResponseDto = bookingService.bookTicket(bookingRequestDto);
                 return ResponseEntity.ok(bookingResponseDto);
@@ -50,6 +52,8 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         }
+
+
 
 
 

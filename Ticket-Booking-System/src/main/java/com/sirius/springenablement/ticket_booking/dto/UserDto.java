@@ -12,11 +12,11 @@ public class UserDto {
     private String email;
     private String password;
     private Roles roles;
-    public java.time.LocalDate getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(java.time.LocalDate dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

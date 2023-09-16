@@ -1,15 +1,24 @@
 package com.sirius.springenablement.ticket_booking.entity;
-import jakarta.persistence.*;
 import jakarta.persistence.Column;
-import java.time.LocalTime;
+import jakarta.persistence.Entity;
 import java.time.LocalDate;
-@jakarta.persistence.Entity
-@lombok.NoArgsConstructor
-@lombok.AllArgsConstructor
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.Id;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import java.util.List;
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "shows")
 public class Shows {
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @jakarta.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)
     @jakarta.persistence.Column(name = "id")
     private int id;
 
@@ -77,19 +86,19 @@ public class Shows {
         this.timeSlot = timeSlot;
     }
 
-    public java.util.List<Tickets> getTickets() {
+    public List<Tickets> getTickets() {
         return tickets;
     }
 
-    public void setTickets(java.util.List<Tickets> tickets) {
+    public void setTickets(List<Tickets> tickets) {
         this.tickets = tickets;
     }
 
-    public com.sirius.springenablement.ticket_booking.entity.Locations getLocation() {
+    public Locations getLocation() {
         return location;
     }
 
-    public void setLocation(com.sirius.springenablement.ticket_booking.entity.Locations location) {
+    public void setLocation(Locations location) {
         this.location = location;
     }
 

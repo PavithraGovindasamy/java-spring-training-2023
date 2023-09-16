@@ -1,11 +1,18 @@
 package com.sirius.springenablement.ticket_booking.entity;
-import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
 @Entity(name="tickets")
-@lombok.Data
-@lombok.NoArgsConstructor
-@lombok.AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Tickets {
 
     @Id
@@ -47,11 +54,11 @@ public class Tickets {
         this.price = price;
     }
 
-    public com.sirius.springenablement.ticket_booking.entity.Shows getShow() {
+    public Shows getShow() {
         return show;
     }
 
-    public void setShow(com.sirius.springenablement.ticket_booking.entity.Shows show) {
+    public void setShow(Shows show) {
         this.show = show;
     }
 }

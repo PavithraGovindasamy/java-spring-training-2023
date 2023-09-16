@@ -5,8 +5,12 @@ import com.sirius.springenablement.ticket_booking.repository.ShowsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import java.util.ArrayList;
+import com.sirius.springenablement.ticket_booking.entity.Tickets;
+import java.time.LocalDate;
 import com.sirius.springenablement.ticket_booking.dto.ShowRequestDto;
 import com.sirius.springenablement.ticket_booking.dto.AvailableShowResponseDto;
+import com.sirius.springenablement.ticket_booking.repository.TicketsRepository;
 @Service
 public class ShowService{
 
@@ -65,17 +69,17 @@ public class ShowService{
 
 
     @Autowired
-    private com.sirius.springenablement.ticket_booking.repository.TicketsRepository ticketRepository;
+    private TicketsRepository ticketRepository;
 
-    public List<AvailableShowResponseDto> findAvailableShows(java.time.LocalDate bookingDate, String timeSlot) {
+    public List<AvailableShowResponseDto> findAvailableShows(LocalDate bookingDate, String timeSlot) {
 
         List<Shows> availableShows = showsRepository.findByDate(bookingDate);
-        List<AvailableShowResponseDto> responseDtoList = new java.util.ArrayList<>();
+        List<AvailableShowResponseDto> responseDtoList = new ArrayList<>();
 
         for (Shows show : availableShows) {
             AvailableShowResponseDto responseDto = new AvailableShowResponseDto();
 
-            List<com.sirius.springenablement.ticket_booking.entity.Tickets> showTickets = ticketRepository.findByShowId(show.getId());
+            List<Tickets> showTickets = ticketRepository.findByShowId(show.getId());
 
             responseDto.setShowName(show.getMovieName());
             responseDto.setAvailableTicketCount(showTickets.size());

@@ -35,14 +35,6 @@ public class Users{
 
     }
 
-//    @ManyToMany(fetch=FetchType.LAZY
-//            ,cascade = {CascadeType.DETACH,CascadeType.MERGE,
-//            CascadeType.PERSIST,CascadeType.REFRESH})
-//    @JoinTable( name = "users_roles",
-//            joinColumns=@JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "roles_id")
-//    )
-//    public java.util.List<Roles> roles;
 
     @Enumerated(EnumType.STRING)
     private Roles role;
@@ -66,13 +58,6 @@ public class Users{
     public void setRole(Roles role) {
         this.role = role;
     }
-//    public LocalDate getDateOfBirth() {
-//        return dateOfBirth;
-//    }
-//
-//    public void setDateOfBirth(LocalDate dateOfBirth) {
-//        this.dateOfBirth = dateOfBirth;
-//    }
 
     public String getPassword() {
         return password;

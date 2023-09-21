@@ -5,12 +5,9 @@ import com.sirius.springenablement.ticket_booking.repository.ShowsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
-import java.util.ArrayList;
-import com.sirius.springenablement.ticket_booking.entity.Tickets;
-import java.time.LocalDate;
 import com.sirius.springenablement.ticket_booking.dto.ShowRequestDto;
 import com.sirius.springenablement.ticket_booking.dto.AvailableShowResponseDto;
-import com.sirius.springenablement.ticket_booking.repository.TicketsRepository;
+import com.sirius.springenablement.ticket_booking.entity.Theatre;
 @Service
 public class ShowService{
 
@@ -57,8 +54,15 @@ public class ShowService{
      */
 
     public List<Shows> findAll() {
-        return showsRepository.findAll();
+        System.out.println("jna");
+        try {
+            return showsRepository.findAll();
+        }
+        catch (Exception e){
+            System.out.println("exce[tiom" + e);
+        }
 
+        return null;
     }
 
     public void findAvailableShows(ShowRequestDto showRequestDto) {
@@ -68,28 +72,48 @@ public class ShowService{
     }
 
 
-    @Autowired
-    private TicketsRepository ticketRepository;
 
-    public List<AvailableShowResponseDto> findAvailableShows(LocalDate bookingDate, String timeSlot) {
 
-        List<Shows> availableShows = showsRepository.findByDate(bookingDate);
-        List<AvailableShowResponseDto> responseDtoList = new ArrayList<>();
+
+    public List<AvailableShowResponseDto> findAvailableShows(java.time.LocalDate bookingDate, String timeSlot, String movieName) {
+
+        List<Shows> availableShows=null;
+        if (bookingDate != null && movieName != null && timeSlot != null) {
+            availableShows = showsRepository.findByDateAndMovieNameAndTimeSlot(bookingDate, movieName, timeSlot);
+        } else if (bookingDate != null && movieName != null) {
+            availableShows = showsRepository.findByDateAndMovieName(bookingDate, movieName);
+        }
+        else if (bookingDate != null && timeSlot != null) {
+            availableShows = showsRepository.findByDateAndTimeSlot(bookingDate, timeSlot);
+        } else if (bookingDate != null) {
+            availableShows = showsRepository.findByDate(bookingDate);
+        }
+
+        List<AvailableShowResponseDto> responseDtoList = new java.util.ArrayList<>();
 
         for (Shows show : availableShows) {
             AvailableShowResponseDto responseDto = new AvailableShowResponseDto();
+            int id=show.getId();
+            System.out.println("id" + id);
 
-            List<Tickets> showTickets = ticketRepository.findByShowId(show.getId());
+            int availableTicketCount = show.getAvailableCount();
+           if(availableTicketCount>0)
+                responseDto.setAvailableTicketCount(availableTicketCount);
+           else
+                responseDto.setAvailableTicketCount(0);
 
             responseDto.setShowName(show.getMovieName());
-            responseDto.setAvailableTicketCount(showTickets.size());
+
+            responseDto.setTheatreName(show.getTheatre().getName());
+            responseDto.setLocationName(show.getTheatre().getLocation().getName());
+
+
 
             responseDtoList.add(responseDto);
         }
 
         return responseDtoList;
     }
-
 
 
 

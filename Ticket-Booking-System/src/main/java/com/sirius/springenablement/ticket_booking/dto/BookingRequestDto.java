@@ -1,4 +1,4 @@
-package com.sirius.springenablement.ticket_booking.services;
+package com.sirius.springenablement.ticket_booking.dto;
 import java.util.Date;
 public class BookingRequestDto {
     private Long userId;
@@ -7,6 +7,16 @@ public class BookingRequestDto {
 
     private String timeslot;
     private java.time.LocalDate date;
+
+    private int noOfTickets;
+
+    public int getNoOfTickets() {
+        return noOfTickets;
+    }
+
+    public void setNoOfTickets(int noOfTickets) {
+        this.noOfTickets = noOfTickets;
+    }
 
     public Long getUserId() {
         return userId;
@@ -47,6 +57,20 @@ public class BookingRequestDto {
 
     public void setTimeslot(String timeslot) {
         this.timeslot = timeslot;
+    }
+
+    private String theatreName;
+
+    public String getTheatreName() {
+        return theatreName;
+    }
+
+    public void setTheatreName(String theatreName) {
+        this.theatreName = theatreName;
+    }
+
+    public java.time.LocalDate getDate() {
+        return date;
     }
 }
 

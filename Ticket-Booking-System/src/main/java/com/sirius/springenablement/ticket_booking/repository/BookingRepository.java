@@ -8,4 +8,8 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Bookings, Long> {
 
 
+    java.util.List<com.sirius.springenablement.ticket_booking.entity.Bookings> findByUserId(Long userId);
+//    Optional<Bookings> findByUserIdAndShowIdAndDate(Long userId, Long showId,java.time.LocalDate date);
+
+    java.util.Optional<com.sirius.springenablement.ticket_booking.entity.Bookings> findByUserIdAndShowId(Long userId, Long userId1);
 }

@@ -2,12 +2,14 @@ package com.sirius.springenablement.ticket_booking.entity;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.Set;
 import java.util.List;
 import com.sirius.springenablement.ticket_booking.entity.Roles;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Entity
 @Table(name = "users")
-@Data
-public class Users{
+public class Users implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,12 +36,17 @@ public class Users{
     public Users() {
 
     }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles=new java.util.HashSet<>();
 
 
-    @Enumerated(EnumType.STRING)
-    private Roles role;
 
-    public Users(String firstName, String lastName,LocalDate dateOfBirth, String email,String password,String gender,Roles roles) {
+    public Users(String firstName, String lastName,LocalDate dateOfBirth, String email,String password,String gender,Set<Roles> roles)  {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -47,20 +54,52 @@ public class Users{
         this.email = email;
         this.gender=gender;
         this.password=password;
-        this.role=roles;
+        this.roles=roles;
+
     }
 
-
-    public Roles getRole() {
-        return role;
+    public java.util.Set<Roles> getRoles() {
+        return roles;
     }
 
-    public void setRole(Roles role) {
-        this.role = role;
+    public void setRoles(java.util.Set<Roles> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> getAuthorities() {
+        java.util.Collection<SimpleGrantedAuthority> authorities=new java.util.ArrayList<>();
+        roles.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+        return List.of(new SimpleGrantedAuthority(authorities.toString()));
     }
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setPassword(String password) {
@@ -78,5 +117,53 @@ public class Users{
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public java.time.LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(java.time.LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

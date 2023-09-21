@@ -1,6 +1,4 @@
 package com.sirius.springenablement.ticket_booking.services;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,120 +6,44 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-
+import com.sirius.springenablement.ticket_booking.entity.Users;
 import java.security.Key;
 import java.util.Date;
+import com.sirius.springenablement.ticket_booking.entity.Roles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-
+import org.springframework.stereotype.Service;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.Collection;
+import com.auth0.jwt.algorithms.Algorithm;
+import org.springframework.context.annotation.PropertySource;
+import lombok.Value;
 @Component
+@PropertySource("classpath:application.properties")
+@Service
 public class JwtService {
 
 
-    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    private String secretKey="123";
 
+ @org.springframework.beans.factory.annotation.Autowired
+    private com.sirius.springenablement.ticket_booking.repository.UserRepository userRepository;
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+ public String generateToken(Users users , Collection<SimpleGrantedAuthority> authorities){
+     Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
+     return com.auth0.jwt.JWT.create()
+             .withSubject(users.getEmail())
+             .withExpiresAt(new java.util.Date(System.currentTimeMillis()+50*60*1000))
+             .withClaim("roles",authorities.stream().map(org.springframework.security.core.GrantedAuthority::getAuthority).collect(java.util.stream.Collectors.toList()))
+             .sign(algorithm);
+ }
+
+    public String generateRefreshToken(Users users , Collection<SimpleGrantedAuthority> authorities){
+        Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
+        return com.auth0.jwt.JWT.create()
+                .withSubject(users.getEmail())
+                .withExpiresAt(new java.util.Date(System.currentTimeMillis()+70*60*1000))
+                .sign(algorithm);
     }
-
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private boolean isTokenExpired(String token) {
-        Date expirationDate = extractExpiration(token);
-        Date currentDate = new Date();
-
-        if (expirationDate.before(currentDate)) {
-            System.out.println("Token has already expired.");
-            return true;
-        }
-
-        long timeDiffMillis = expirationDate.getTime() - currentDate.getTime();
-        long remainingMinutes = timeDiffMillis / (1000 * 60);
-
-        System.out.println("Remaining minutes until token expires: " + remainingMinutes);
-
-        return false;
-    }
-
-
-    public Boolean validateToken(String token) {
-        try {
-            System.out.println("token 78"+token);
-            boolean isExpired = isTokenExpired(token);
-
-            return !isExpired;
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println(isTokenExpired(token));
-            return false;
-        }
-    }
-
-
-
-
-
-    public String generateToken(String userName){
-        Map<String,Object> claims=new HashMap<>();
-        return createToken(claims,userName);
-    }
-
-    private String createToken(Map<String, Object> claims, String userName) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-    }
-
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(SECRET)
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
-    }
-
-
-    public Long extractUserIdFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET)
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return Long.parseLong(claims.getSubject());
-        } catch (Exception e) {
-
-            throw new JwtException("Invalid or expired token");
-        }
-    }
-
-    private Key getSignKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(SECRET);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-
 }

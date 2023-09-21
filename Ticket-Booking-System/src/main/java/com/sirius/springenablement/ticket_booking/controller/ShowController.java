@@ -9,11 +9,15 @@ import  org.springframework.web.bind.annotation.*;
 import  com.sirius.springenablement.ticket_booking.dto.ShowRequestDto;
 import org.springframework.http.*;
 import com.sirius.springenablement.ticket_booking.dto.AvailableShowResponseDto;
+import com.sirius.springenablement.ticket_booking.repository.LocationsRepository;
 @RestController
-@RequestMapping("/api/shows")
+@RequestMapping("/shows")
 public class ShowController {
     @Autowired
     public ShowService showService;
+
+    @Autowired
+    private LocationsRepository locationsRepository;
 
     /**
      * Get Availble Shows
@@ -21,30 +25,34 @@ public class ShowController {
      * @return
      */
     @PostMapping("/availableShows")
-    public ResponseEntity<String> getAvailableShowsAndTickets(@RequestBody ShowRequestDto showRequestDto) {
+    public ResponseEntity<List<AvailableShowResponseDto>> getAvailableShowsAndTickets(@RequestBody ShowRequestDto showRequestDto) {
         try {
             java.time.LocalDate date = showRequestDto.getDate();
             String timeslot = showRequestDto.getTimeSlot();
 
-            List<AvailableShowResponseDto> availableShowsWithTickets = showService.findAvailableShows(date, timeslot);
+            String movieName=showRequestDto.getMovieName();
+            List<AvailableShowResponseDto> availableShowsWithTickets = showService.findAvailableShows(date, timeslot,movieName);
             System.out.println("available " + availableShowsWithTickets);
-
-            StringBuilder responseBuilder = new StringBuilder();
-            for (AvailableShowResponseDto responseDto : availableShowsWithTickets) {
-                responseBuilder.append("Show: ").append(responseDto.getShowName());
-                responseBuilder.append(", Available Tickets: ").append(responseDto.getAvailableTicketCount()).append("\n");
-            }
-
-            return ResponseEntity.ok(responseBuilder.toString());
+            return ResponseEntity.ok(availableShowsWithTickets);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+            AvailableShowResponseDto responseDto = new AvailableShowResponseDto();
+            System.out.println("exeception"+e);
+            responseDto.setSuccess(false);
+            responseDto.setMessage("Failed ");
+
+            List<AvailableShowResponseDto> errorList = new ArrayList<>();
+            errorList.add(responseDto);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorList);
         }
-    }
+        }
+
 
 
 
     @GetMapping("/allShows")
     public List<Shows> getAllShows(){
+
         return showService.findAll();
     }
 
@@ -59,6 +67,7 @@ public class ShowController {
         Optional<Shows> Show = showService.findById(ShowId);
         if (Show.isPresent()) {
             Shows shows = Show.get();
+
             String response = "Show: " + shows.getId() + " " + shows.getMovieName()+ "\n";
 
             return response;
@@ -76,6 +85,7 @@ public class ShowController {
 
     @PostMapping
     public String addShows(@RequestBody Shows shows){
+        shows.setActive(true);
         showService.save(shows);
         return "Show added";
     }

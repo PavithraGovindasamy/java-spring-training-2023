@@ -21,16 +21,7 @@ public class AuthController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        String providedEmail = loginRequest.getEmail();
-        String providedPassword = loginRequest.getPassword();
-
-        String jwtToken = authenticationService.authenticateAndGenerateToken(providedEmail, providedPassword);
-
-        if (jwtToken != null) {
-            return ResponseEntity.ok(jwtToken);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
-        }
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest) {
+      return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
     }
 }

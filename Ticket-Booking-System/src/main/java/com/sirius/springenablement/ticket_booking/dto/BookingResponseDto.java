@@ -3,8 +3,29 @@ import java.time.LocalDate;
 public class BookingResponseDto {
     private Long userId;
     private String movieName;
-    private java.time.LocalDate bookingDate;
+
     private String location;
+
+    private String theatreName;
+    public String getTheatreName() {
+        return theatreName;
+    }
+
+    public void setTheatreName(String theatreName) {
+        this.theatreName = theatreName;
+    }
+
+
+    private int noOfTickets;
+
+    public int getNoOfTickets() {
+        return noOfTickets;
+    }
+
+    public void setNoOfTickets(int noOfTickets) {
+        this.noOfTickets = noOfTickets;
+    }
+
     private int id;
 
     public String getStatus() {
@@ -35,13 +56,7 @@ public class BookingResponseDto {
         this.movieName = movieName;
     }
 
-    public LocalDate getBookingDate() {
-        return bookingDate;
-    }
 
-    public void setBookingDate(java.time.LocalDate bookingDate) {
-        this.bookingDate = bookingDate;
-    }
 
     public String getLocation() {
         return location;

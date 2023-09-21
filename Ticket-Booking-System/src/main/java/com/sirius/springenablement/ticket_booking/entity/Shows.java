@@ -1,24 +1,15 @@
 package com.sirius.springenablement.ticket_booking.entity;
+import jakarta.persistence.*;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import java.time.LocalTime;
 import java.time.LocalDate;
-import lombok.NoArgsConstructor;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import org.springframework.data.annotation.Id;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import java.util.List;
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@jakarta.persistence.Entity
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 @Table(name = "shows")
 public class Shows {
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)
+    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     @jakarta.persistence.Column(name = "id")
     private int id;
 
@@ -37,14 +28,42 @@ public class Shows {
     @Column(name = "date")
     private LocalDate date;
 
+    @Column(name = "active")
+    private Boolean active;
 
-    @OneToMany(mappedBy = "show", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<Tickets> tickets;
+    @OneToMany(mappedBy = "show", cascade = CascadeType.REMOVE)
+    private java.util.List<Bookings> bookings;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Locations location;
+    @JoinColumn(name = "theatre_id")
+    private Theatre theatre;
 
+    public com.sirius.springenablement.ticket_booking.entity.Theatre getTheatre() {
+        return theatre;
+    }
+
+    public void setTheatre(com.sirius.springenablement.ticket_booking.entity.Theatre theatre) {
+        this.theatre = theatre;
+    }
+
+    @Column(name="availableCount")
+    private int availableCount;
+
+    public int getAvailableCount() {
+        return availableCount;
+    }
+
+    public void setAvailableCount(int availableCount) {
+        this.availableCount = availableCount;
+    }
 
     public int getId() {
         return id;
@@ -86,21 +105,9 @@ public class Shows {
         this.timeSlot = timeSlot;
     }
 
-    public List<Tickets> getTickets() {
-        return tickets;
-    }
 
-    public void setTickets(List<Tickets> tickets) {
-        this.tickets = tickets;
-    }
 
-    public Locations getLocation() {
-        return location;
-    }
 
-    public void setLocation(Locations location) {
-        this.location = location;
-    }
 
     @Override
     public String toString() {

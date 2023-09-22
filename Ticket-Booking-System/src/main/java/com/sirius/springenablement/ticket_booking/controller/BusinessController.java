@@ -1,8 +1,10 @@
 package com.sirius.springenablement.ticket_booking.controller;
+import com.sirius.springenablement.ticket_booking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import  com.sirius.springenablement.ticket_booking.entity.*;
 import  java.util.*;
+import com.sirius.springenablement.ticket_booking.dto.ApiResponseDto;
 import org.springframework.web.bind.annotation.RestController;
 import  org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,8 @@ import com.sirius.springenablement.ticket_booking.services.BookingService;
 public class BusinessController {
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private UserRepository userRepository;
     @GetMapping
     public ResponseEntity<List<CancellationRequest>> cancel(){
        List<CancellationRequest> bookings=bookingService.getCancellationRequest();
@@ -26,13 +30,36 @@ public class BusinessController {
     }
 
 
+    @PostMapping
+    public ResponseEntity<ApiResponseDto> cancelTickets(){
+        List<CancellationRequest> bookings=bookingService.getCancellationRequest();
+        bookingService.cancelTickets(bookings);
+        ApiResponseDto bookingResponseDto =new ApiResponseDto();
+        bookingResponseDto.setMessage("Booking Cancelled");
+        bookingResponseDto.setStatusCode(200);
+        return ResponseEntity.ok(bookingResponseDto);
+
+    }
+
 
 
     @PostMapping("/book")
     public ResponseEntity<BookingResponseDto> bookTicket(@RequestBody BookingRequestDto bookingRequestDto) {
         try {
-            BookingResponseDto bookingResponseDto = bookingService.bookTicket(bookingRequestDto);
-            return ResponseEntity.ok(bookingResponseDto);
+            Users user=userRepository.findById(bookingRequestDto.getUserId()).orElse(null);
+            boolean hasUserRole = user.getRoles()
+                    .stream()
+                    .anyMatch(role -> "ROLE_USER".equals(role.getName()));
+            if(!hasUserRole) {
+
+                BookingResponseDto bookingResponseDto = bookingService.bookTicket(bookingRequestDto);
+                return ResponseEntity.ok(bookingResponseDto);
+            }else{
+                BookingResponseDto bookingResponseDto = new BookingResponseDto();
+                bookingResponseDto.setStatus("You can only book tickets to user");
+                return ResponseEntity.ok(bookingResponseDto);
+
+            }
         } catch (Exception e) {
             BookingResponseDto bookingResponseDto =new BookingResponseDto();
             bookingResponseDto.setStatus("false-No- tickets available");

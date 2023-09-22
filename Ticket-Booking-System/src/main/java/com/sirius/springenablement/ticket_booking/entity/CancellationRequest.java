@@ -3,9 +3,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 @Entity
-@lombok.NoArgsConstructor
-@lombok.AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class CancellationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

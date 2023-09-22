@@ -10,17 +10,17 @@ public interface ShowsRepository extends JpaRepository<Shows, Long> {
 
     
 
-    java.util.List<com.sirius.springenablement.ticket_booking.entity.Shows> findByDate(LocalDate bookingDate);
+   List<Shows> findByDate(LocalDate bookingDate);
 
 
 
-    com.sirius.springenablement.ticket_booking.entity.Shows findByMovieName(String movieName);
+    Shows findByMovieName(String movieName);
 
     List<Shows> findByDateAndTimeSlot(LocalDate bookingDate, String timeSlot);
 
     Shows findByMovieNameAndTheatreName(String movieName,String theatreName);
 
-    java.util.List<com.sirius.springenablement.ticket_booking.entity.Shows> findByDateAndMovieNameAndTimeSlot(java.time.LocalDate bookingDate, String movieName, String timeSlot);
+    List<Shows> findByDateAndMovieNameAndTimeSlot(LocalDate bookingDate, String movieName, String timeSlot);
 
-    java.util.List<com.sirius.springenablement.ticket_booking.entity.Shows> findByDateAndMovieName(java.time.LocalDate bookingDate, String movieName);
+    List<Shows> findByDateAndMovieName(LocalDate bookingDate, String movieName);
 }

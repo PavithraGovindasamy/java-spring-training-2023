@@ -1,4 +1,5 @@
 package com.sirius.springenablement.ticket_booking.services;
+import com.sirius.springenablement.ticket_booking.auth.AuthenticationRequest;
 import com.sirius.springenablement.ticket_booking.entity.Users;
 import com.sirius.springenablement.ticket_booking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import com.sirius.springenablement.ticket_booking.auth.AuthenticationResponse;
 import java.util.NoSuchElementException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import com.sirius.springenablement.ticket_booking.entity.Roles;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,11 +27,11 @@ public class AuthenticationService {
     @Autowired
     private JwtService jwtService;
 
-    public ResponseEntity<?> authenticate(com.sirius.springenablement.ticket_booking.auth.AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<?> authenticate(AuthenticationRequest authenticationRequest) {
         try {
             Users user = userRepository.findByEmail(authenticationRequest.getEmail())
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
-            String plainPassword = authenticationRequest.getPassword(); // Get the plain password from the request
+            String plainPassword = authenticationRequest.getPassword();
             String hashedPassword = user.getPassword();
             if (passwordEncoder.matches(plainPassword, hashedPassword)) {
                 authenticationManager.authenticate(
@@ -61,8 +61,7 @@ public class AuthenticationService {
             }
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (org.springframework.security.authentication.BadCredentialsException e) {
-            System.out.println("Authentication failed for username: " + authenticationRequest.getEmail());
+        } catch (BadCredentialsException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("INVALID CREDENTIALS");
         } catch (Exception e) {

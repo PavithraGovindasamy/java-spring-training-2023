@@ -13,19 +13,19 @@ public class UserDto {
     private String email;
     private String password;
     private List<Roles> role;
-    public java.time.LocalDate getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public java.util.List<com.sirius.springenablement.ticket_booking.entity.Roles> getRole() {
+    public List<Roles> getRole() {
         return role;
     }
 
-    public void setRoles(java.util.List<com.sirius.springenablement.ticket_booking.entity.Roles> role) {
+    public void setRoles(List<Roles> role) {
         this.role = role;
     }
 
-    public void setDateOfBirth(java.time.LocalDate dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

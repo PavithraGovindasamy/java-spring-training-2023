@@ -1,13 +1,7 @@
 package com.sirius.springenablement.ticket_booking.controller;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import com.sirius.springenablement.ticket_booking.entity.Locations;
 import com.sirius.springenablement.ticket_booking.dto.UserDto;
 import com.sirius.springenablement.ticket_booking.entity.Users;
@@ -22,7 +16,7 @@ import com.sirius.springenablement.ticket_booking.services.JwtService;
 import com.sirius.springenablement.ticket_booking.entity.Bookings;
 import  com.sirius.springenablement.ticket_booking.repository.BookingRepository;
 import com.sirius.springenablement.ticket_booking.repository.LocationsRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -62,9 +56,8 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<BookingResponseDto>> getUserBookings(@PathVariable Long userId) {
-        System.out.println("nm,"+ userId);
         List<Bookings> userBookings = bookingService.getUserBookings(userId);
-        // Convert booking entities to DTOs and return them in the response
+
         List<BookingResponseDto> bookingResponseDtoList = userBookings.stream()
                 .map(booking -> {
                     BookingResponseDto dto = new BookingResponseDto();
@@ -76,13 +69,11 @@ public class UserController {
                     dto.setLocation(booking.getShow().getTheatre().getLocation().getName());
                     dto.setStatus(booking.getBookingStatus());
 
-
                     return dto;
 
 
                 })
                 .collect(Collectors.toList());
-        System.out.println(bookingResponseDtoList);
         return ResponseEntity.ok(bookingResponseDtoList);
     }
 
@@ -93,7 +84,6 @@ public class UserController {
         public ResponseEntity<BookingResponseDto> bookTicket(@RequestBody BookingRequestDto bookingRequestDto) {
             try {
                 Locations selectedLocation = locationsRepository.getLocationByName(bookingRequestDto.getLocation());
-                System.out.println("Location added"+selectedLocation);
                 if(!selectedLocation.isPrime()) {
 
                     BookingResponseDto bookingResponseDto = bookingService.bookTicket(bookingRequestDto);
@@ -131,7 +121,6 @@ public class UserController {
             Bookings booking = bookingRepository.findById(requestDto.getBookingId())
                     .orElseThrow(() -> new Exception("Booking not found"));
             if(booking.getBookingStatus().equals("Confirmed")) {
-                 System.out.println("booking" + booking.getBookingStatus()+"id"+booking.getId());
                 int currentTicketCount = booking.getNoOfTickets();
                 int newTicketCount;
 
@@ -169,19 +158,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-
-
-
-    @PostMapping("/logout")
-    public void logout() {
-
-        SecurityContextHolder.clearContext();
-    }
-
-
-
-
-
 
 
 

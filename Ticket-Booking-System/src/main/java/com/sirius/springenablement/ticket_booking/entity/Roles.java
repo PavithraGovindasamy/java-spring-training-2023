@@ -1,22 +1,21 @@
 package com.sirius.springenablement.ticket_booking.entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import java.util.List;
+import jakarta.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import java.util.Set;
-@jakarta.persistence.Entity
-@Table(name = "roles")
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@lombok.Getter
-@lombok.Setter
-@lombok.NoArgsConstructor
+import java.util.Set;
+@Entity
+@Table(name = "roles")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Roles {
 
-    @jakarta.persistence.PrePersist
+    @PrePersist
     protected  void onCreate(){
 
     }
@@ -28,11 +27,18 @@ public class Roles {
     @Column(name = "name")
     private String name;
 
-    @jakarta.persistence.ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     private Set<Users> user=new java.util.HashSet<>();
     public Roles(String name){
         this.name=name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

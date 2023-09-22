@@ -6,9 +6,9 @@ import com.sirius.springenablement.ticket_booking.entity.*;
 import java.util.List;
 import com.sirius.springenablement.ticket_booking.entity.CancellationRequest;
 import java.time.LocalDate;
-import java.util.Optional;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-@org.springframework.stereotype.Service
+import org.springframework.stereotype.Service;
+
+@Service
 public class BookingService {
 
     @Autowired
@@ -32,9 +32,7 @@ public class BookingService {
 
             Users user = userRepository.findById(bookingRequestDto.getUserId())
                     .orElseThrow(() -> new Exception("User not found"));
-            System.out.println("user" + user);
             Shows show = showsRepository.findByMovieNameAndTheatreName(bookingRequestDto.getMovieName(), bookingRequestDto.getTheatreName());
-            System.out.println("user show" + show);
 
 
             if (show == null) {
@@ -45,7 +43,6 @@ public class BookingService {
 
             // Reducing the ticket count
             int id = show.getId();
-            System.out.println("id" + id);
 
             Bookings booking = new Bookings();
             booking.setUser(user);
@@ -57,7 +54,6 @@ public class BookingService {
             Bookings savedBooking = bookingRepository.save(booking);
 
             int newAvailableCount = show.getAvailableCount() - numberOfTicketsToBook;
-            System.out.println("new available" + show.getAvailableCount() + "tickets to book " + numberOfTicketsToBook);
             show.setAvailableCount(newAvailableCount);
             showsRepository.save(show);
 
@@ -96,12 +92,34 @@ public class BookingService {
 
 
     public List<CancellationRequest> getCancellationRequest() {
-      List<CancellationRequest> bookings=cancellationRequestRepository.findAll();
+        List<CancellationRequest> bookings=cancellationRequestRepository.findAll();
+
         return bookings;
     }
     public void cancelShow(long showId) {
         Shows show = showsRepository.findById(showId).orElse(null);
         show.setActive(false);
         showsRepository.save(show);
+    }
+
+
+    public void cancelTickets(List<CancellationRequest> bookings) {
+        bookings.forEach(cancellationRequest -> {
+            Bookings cancelBookings=bookingRepository.findById(cancellationRequest.getBookingId()).orElse(null);
+            int ticketCount =cancelBookings.getShow().getAvailableCount();
+            Shows show=cancelBookings.getShow();
+
+
+            show.setAvailableCount(show.getAvailableCount()+ticketCount);
+
+
+            showsRepository.save(show);
+            cancelBookings.setBookingStatus("cancelled");
+            bookingRepository.save(cancelBookings);
+        });
+
+
+        cancellationRequestRepository.deleteAll(bookings);
+
     }
 }

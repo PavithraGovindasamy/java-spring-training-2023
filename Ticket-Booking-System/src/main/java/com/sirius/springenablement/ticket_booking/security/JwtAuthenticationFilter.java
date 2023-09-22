@@ -1,4 +1,9 @@
 package com.sirius.springenablement.ticket_booking.security;
+import com.sirius.springenablement.ticket_booking.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +25,7 @@ import com.sirius.springenablement.ticket_booking.dto.ErrorResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private final com.sirius.springenablement.ticket_booking.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private String secretKey="123";
 
@@ -28,8 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, jakarta.servlet.FilterChain filterChain)
-            throws jakarta.servlet.ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
 
@@ -43,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              JWTVerifier verifier= com.auth0.jwt.JWT.require(algorithm).build();
              DecodedJWT decodeJWT=verifier.verify(token);
              String username=decodeJWT.getSubject();
-             System.out.println("user" + userRepository.findByEmail(username));
              userRepository.findByEmail(username).orElseThrow(()->new Exception("Invalid token"));
 
              String[] roles=decodeJWT.getClaim("roles").asArray(String.class);

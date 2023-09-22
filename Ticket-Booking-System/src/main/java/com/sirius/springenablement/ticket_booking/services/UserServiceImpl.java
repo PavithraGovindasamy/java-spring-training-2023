@@ -1,18 +1,25 @@
 package com.sirius.springenablement.ticket_booking.services;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sirius.springenablement.ticket_booking.entity.Users;
 import com.sirius.springenablement.ticket_booking.repository.UserRepository;
 import com.sirius.springenablement.ticket_booking.repository.RolesRepository;
 import  java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import com.sirius.springenablement.ticket_booking.dto.UserDto;
 import com.sirius.springenablement.ticket_booking.entity.Roles;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 @Transactional
-@lombok.RequiredArgsConstructor
-@lombok.extern.slf4j.Slf4j
+@RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl  implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -38,7 +45,12 @@ public class UserServiceImpl  implements UserService {
         user.setDateOfBirth(userDto.getDateOfBirth());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-     user.setRoles(new java.util.HashSet<>());
+
+        Set<Roles> roles = new HashSet<>();
+        Roles defaultRole = rolesRepository.findByName("ROLE_USER");
+        roles.add(defaultRole);
+
+        user.setRoles(roles);
         userRepository.save(user);
     }
 
@@ -49,8 +61,8 @@ public class UserServiceImpl  implements UserService {
         return java.time.Period.between(dateOfBirth, today).getYears() >= 18;
     }
 
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws org.springframework.security.core.userdetails.UsernameNotFoundException {
-        java.util.Optional<com.sirius.springenablement.ticket_booking.entity.Users> userOptional = userRepository.findByEmail(username);
+    public UserDetails loadUserByUsername(String username) throws org.springframework.security.core.userdetails.UsernameNotFoundException {
+        Optional<Users> userOptional = userRepository.findByEmail(username);
 
         if (userOptional.isEmpty()) {
             throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found with email: " + username);

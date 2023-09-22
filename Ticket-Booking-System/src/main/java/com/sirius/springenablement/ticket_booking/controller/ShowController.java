@@ -32,11 +32,9 @@ public class ShowController {
 
             String movieName=showRequestDto.getMovieName();
             List<AvailableShowResponseDto> availableShowsWithTickets = showService.findAvailableShows(date, timeslot,movieName);
-            System.out.println("available " + availableShowsWithTickets);
             return ResponseEntity.ok(availableShowsWithTickets);
         } catch (Exception e) {
             AvailableShowResponseDto responseDto = new AvailableShowResponseDto();
-            System.out.println("exeception"+e);
             responseDto.setSuccess(false);
             responseDto.setMessage("Failed ");
 

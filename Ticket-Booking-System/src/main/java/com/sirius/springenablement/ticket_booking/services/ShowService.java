@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import com.sirius.springenablement.ticket_booking.dto.ShowRequestDto;
 import com.sirius.springenablement.ticket_booking.dto.AvailableShowResponseDto;
-import com.sirius.springenablement.ticket_booking.entity.Theatre;
 @Service
 public class ShowService{
 

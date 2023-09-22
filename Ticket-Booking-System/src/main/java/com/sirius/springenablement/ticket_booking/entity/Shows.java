@@ -3,14 +3,16 @@ import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import java.time.LocalTime;
 import java.time.LocalDate;
+import java.util.List;
+
 @jakarta.persistence.Entity
 @lombok.NoArgsConstructor
 @lombok.AllArgsConstructor
 @Table(name = "shows")
 public class Shows {
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    @jakarta.persistence.Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
   @Column(name = "movie_name")
@@ -32,7 +34,7 @@ public class Shows {
     private Boolean active;
 
     @OneToMany(mappedBy = "show", cascade = CascadeType.REMOVE)
-    private java.util.List<Bookings> bookings;
+    private List<Bookings> bookings;
 
     public boolean isActive() {
         return active;
@@ -46,11 +48,11 @@ public class Shows {
     @JoinColumn(name = "theatre_id")
     private Theatre theatre;
 
-    public com.sirius.springenablement.ticket_booking.entity.Theatre getTheatre() {
+    public Theatre getTheatre() {
         return theatre;
     }
 
-    public void setTheatre(com.sirius.springenablement.ticket_booking.entity.Theatre theatre) {
+    public void setTheatre(Theatre theatre) {
         this.theatre = theatre;
     }
 

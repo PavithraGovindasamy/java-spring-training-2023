@@ -6,6 +6,6 @@ package com.sirius.springenablement.ticket_booking.dto;
         private Long userId;
         private Long bookingId;
         private Integer newTicketCount;
-        private String action; // "increase" or "decrease"
+        private String action;
     }
 

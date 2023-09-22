@@ -1,8 +1,12 @@
 package com.sirius.springenablement.ticket_booking.repository;
 
-@org.springframework.stereotype.Repository
-public interface LocationsRepository extends org.springframework.data.jpa.repository.JpaRepository<com.sirius.springenablement.ticket_booking.entity.Locations, Long> {
-    com.sirius.springenablement.ticket_booking.entity.Locations findByName(String locationName);
+import com.sirius.springenablement.ticket_booking.entity.Locations;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-    com.sirius.springenablement.ticket_booking.entity.Locations getLocationByName(String location);
+@Repository
+public interface LocationsRepository extends JpaRepository<Locations, Long> {
+   Locations findByName(String locationName);
+
+   Locations getLocationByName(String location);
 }

@@ -2,9 +2,11 @@ package com.sirius.springenablement.ticket_booking.entity;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Collection;
 import java.util.Set;
 import java.util.List;
-import com.sirius.springenablement.ticket_booking.entity.Roles;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Entity
@@ -67,8 +69,8 @@ public class Users implements UserDetails {
     }
 
     @Override
-    public java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> getAuthorities() {
-        java.util.Collection<SimpleGrantedAuthority> authorities=new java.util.ArrayList<>();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+       Collection<SimpleGrantedAuthority> authorities=new java.util.ArrayList<>();
         roles.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
         return List.of(new SimpleGrantedAuthority(authorities.toString()));
     }

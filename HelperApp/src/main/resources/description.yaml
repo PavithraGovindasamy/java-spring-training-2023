@@ -1,0 +1,533 @@
+openapi: 3.0.3
+info:
+  title: Helper App
+  description: Helper App that allows Residents of an apartment to hire and schedule Home services
+  version: 3.1.2
+servers:
+  - url: https://localhost:8001
+paths:
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      operationId: registerUser
+      requestBody:
+        description: Registering a user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Bad request
+
+  /api/login:
+    post:
+      tags:
+        - Users
+      summary: Authenticate User
+      operationId: loginUser
+      requestBody:
+        description: Authenticate a user with email and password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        '200':
+          description: Authenticated user successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+        '401':
+          description: Unauthorized access
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /loggout:
+    post:
+      tags:
+        - Users
+      summary: Logout a user
+      operationId: logoutUser
+      requestBody:
+        description: Logout a user by invalidating the token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+
+
+  /users/hireHelper:
+    post:
+      tags:
+        - Users
+      summary: Hiring a technician
+      requestBody:
+        description: Booking/Hiring a technician
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingTechnicianDto'
+      responses:
+        '201':
+          description: Booked Technician Successfully
+        '401':
+          description: Bad request
+
+
+  /helpers:
+    post:
+      tags:
+        - Helpers
+      summary: Create a new helper
+      operationId: createHelper
+      requestBody:
+        description: Creating a new helper
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelperDto'
+      responses:
+        '201':
+          description: Helper created successfully
+        '401':
+          description: Unauthorized access
+  /admin/update:
+    put:
+      tags:
+        - Admin
+      summary: Update helper information
+      operationId: updateHelper
+      requestBody:
+        description: Updating helper information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelperDto'
+      responses:
+        '200':
+          description: Slot Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+  /helpers/{helperId}:
+    delete:
+      tags:
+        - Helpers
+      summary: Delete a helper
+      operationId: deleteHelper
+      parameters:
+        - name: helperId
+          in: path
+          description: ID of the helper to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Helper deleted successfully
+        '401':
+          description: Unauthorized access
+
+  /users/residents/book-technician:
+    post:
+      tags:
+        - Users
+      summary: Book a slot with a technician
+      operationId: bookTechnicianSlot
+      requestBody:
+        description: Booking a slot with a technician
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingTechnicianDto'
+      responses:
+        '200':
+          description: Slot Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+  /users/getAvailableTechnicians:
+    get:
+      tags:
+        - Users
+      summary: Get Available Technicians
+      operationId: getAvailableTechnicians
+      parameters:
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: profession
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: startTime
+          in: query
+          required: false
+          schema:
+            type: string
+            format: time
+        - name: endTime
+          in: query
+          required: false
+          schema:
+            type: string
+            format: time
+      responses:
+        '200':
+          description: Successful response with a list of available technicians.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlotDto'
+        '401':
+          description: Unauthorized access
+
+  /admin/add:
+    post:
+      tags:
+        - Admin
+      summary: Add a new member
+      operationId: addNewMember
+      requestBody:
+        description: Adding a new resident
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+      responses:
+        '200':
+          description: Member added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+
+  /admin/removeResident/{residentId}:
+    delete:
+      tags:
+        - Admin
+      summary: Remove a resident
+      operationId: removeResident
+      parameters:
+        - name: residentId
+          in: path
+          description: ID of the resident to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+  /admin/removeHelper/{helperId}:
+    delete:
+      tags:
+        - Admin
+      summary: Remove a Helper
+      operationId: removeHelper
+      parameters:
+        - name: helperId
+          in: path
+          description: ID of the helper to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+  /admin/getApprovalRequest:
+    get:
+      tags:
+        - Admin
+      summary: get approval request
+      operationId: getApprovalRequest
+      responses:
+        '200':
+          description: getting approval request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalDto'
+        '401':
+          description: Unauthorised access
+  /admin/approveRequest:
+    put:
+      tags:
+        - Admin
+      summary: approve the request
+      operationId: approveRequest
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+
+
+
+
+  /helpers/appointments:
+    get:
+      tags:
+        - Helpers
+      summary: Get appointments for a helper
+      operationId: getHelperAppointments
+      parameters:
+        - name: helperId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Appointments of helper
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelperAppointmentDto'
+        '401':
+          description: Unauthorized access
+components:
+  schemas:
+    UserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        role:
+          type: array
+          items:
+            type: string
+        specialisation:
+          type: string
+    Roles:
+      type: string
+    BookingTechnicianDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        helperId:
+          type: integer
+        timeSlotId:
+          type: integer
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    HelperDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    ResidentDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    ApiResponseDto:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int64
+        message:
+          type: string
+    AuthenticationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthenticationResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    HelperAppointmentDto:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: string
+          format: time
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+
+    TimeSlotDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: string
+          format: time
+        date:
+          type: string
+          format: date
+        helpers:
+          type: array
+          items:
+            $ref: '#/components/schemas/HelperDisplayDto'
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    HelperDisplayDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        specialization:
+          type: string
+    ApprovalDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+
+
+
+
+
+

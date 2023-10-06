@@ -1,6 +1,10 @@
 package com.cdw.springenablement.helper_App.dto;
 import org.springframework.http.HttpStatus;
 
+/**
+ * class that gets statusCode,message from jwtfilter and returns it
+ * @Author pavithra
+ */
 @lombok.Getter
 @lombok.Setter
 @lombok.AllArgsConstructor

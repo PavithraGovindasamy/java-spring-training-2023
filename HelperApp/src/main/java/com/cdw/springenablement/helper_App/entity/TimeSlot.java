@@ -1,16 +1,17 @@
 package com.cdw.springenablement.helper_App.entity;
-
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Entity that has the timeslots start and end time
+ */
 @Entity
 @Table(name = "timeslot")
 @Getter
@@ -32,9 +33,14 @@ public class TimeSlot {
     @Column(name = "end_time")
     private LocalTime endTime;
 
-
+    @NotNull
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Invalid date format. The expected format is yyyy-MM-dd")
     @Column(name = "date")
     private LocalDate date;
+
+    @OneToMany(mappedBy = "timeSlot", cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
+    private List<Bookings> bookings;
+
 
 
 
@@ -78,27 +84,6 @@ public class TimeSlot {
         this.date = date;
     }
 
-
-
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "timeslot_helper",
-            joinColumns = @JoinColumn(name = "timeslot_id"),
-            inverseJoinColumns = @JoinColumn(name = "helper_id")
-    )
-    private Set<Helper> helpers;
-
-
-    public Set<Helper> getHelpers() {
-        return helpers;
-    }
-
-    public void setHelpers(Set<Helper> helpers) {
-        this.helpers = helpers;
-    }
-
-    @OneToMany(mappedBy = "timeSlot", cascade = CascadeType.ALL)
-    private List<Bookings> bookings;
 
     public List<Bookings> getBookings() {
         return bookings;

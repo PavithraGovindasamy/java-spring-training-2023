@@ -1,14 +1,14 @@
 package com.cdw.springenablement.helper_App.entity;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,10 +23,13 @@ public class Users implements UserDetails {
 
     @Column(name = "first_name")
     @NotNull
+    @Size(min = 5)
+    @Pattern(regexp = "[a-zA-Z]{5,20}", message = "Username must contain only letters ")
     private String firstName;
 
     @Column(name = "last_name")
     @NotNull
+    @Size(min = 1)
     private String lastName;
 
     @Column(name="dob")
@@ -35,11 +38,12 @@ public class Users implements UserDetails {
 
     @Column(name = "gender")
     @NotNull
+    @Pattern(regexp = "^(FEMALE|MALE)$", message = "Gender must be FEMALE or MALE")
     private String gender;
 
     @Column(name = "email")
     @NotNull
-    @Email(message = "Email is not valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @Email(message = "please provide a valid email")
     @NotEmpty(message = "Email cannot be empty")
     private String email;
 
@@ -61,7 +65,7 @@ public class Users implements UserDetails {
     public Users() {
 
     }
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

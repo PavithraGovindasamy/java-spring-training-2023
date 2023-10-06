@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,14 +17,18 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.JWTVerifier;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
-
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.ArrayList;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import  java.util.Collection;
+import org.springframework.stereotype.Component;
 
-@org.springframework.stereotype.Component
-@lombok.RequiredArgsConstructor
+/**
+ * class which checks whether the token is valid and also user roles and credentials are valid
+ * @Author pavithra
+ */
+@Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -35,14 +40,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String secretKey="123";
 
 
-
+    /**
+     * class which filters or check token
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
-
-
 
         if (authorizationHeader != null  && authorizationHeader.startsWith("Bearer ")) {
 
@@ -52,12 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              JWTVerifier verifier= com.auth0.jwt.JWT.require(algorithm).build();
              DecodedJWT decodeJWT=verifier.verify(token);
              String username=decodeJWT.getSubject();
-             System.out.println("token --ijizj"+ token);
              if (tokenBlacklistService.isTokenBlacklisted(token)) {
                  throw new Exception("User has logged out,please login again");
              }
              userRepository.findByEmail(username).orElseThrow(()->new Exception("Invalid token"));
-
              String[] roles=decodeJWT.getClaim("roles").asArray(String.class);
             Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
              java.util.Arrays.stream(roles).forEach(role->
@@ -73,8 +81,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
          }
         }
 
-else{
-    filterChain.doFilter(request,response);
+    else{
+          filterChain.doFilter(request,response);
         }
     }
 

@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Entity that stores the blacklisted token
+ * @Author pavithra
+ */
 @Entity
 @Table(name = "blacklist_token")
 @Getter

@@ -191,30 +191,6 @@ paths:
         - Users
       summary: Get Available Technicians
       operationId: getAvailableTechnicians
-      parameters:
-        - name: date
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: profession
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: startTime
-          in: query
-          required: false
-          schema:
-            type: string
-            format: time
-        - name: endTime
-          in: query
-          required: false
-          schema:
-            type: string
-            format: time
       responses:
         '200':
           description: Successful response with a list of available technicians.
@@ -459,7 +435,7 @@ components:
         email:
           type: string
           format: email
-        password:
+        message:
           type: string
     HelperAppointmentDto:
       type: object

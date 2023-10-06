@@ -5,9 +5,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
 import java.util.Set;
 
+/**
+ * Entity that stores the helper special details
+ * @Author pavithra
+ */
 @Entity
 @Table(name = "helpers")
 @Getter
@@ -18,7 +21,7 @@ public class Helper {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private Users user;
 
@@ -26,14 +29,5 @@ public class Helper {
     private String specialization;
 
 
-
-
-    @ManyToMany(mappedBy = "helpers")
-    private Set<TimeSlot> timeSlots;
-
-
-
-//    @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
-//    private List<TimeSlot> timeSlots;
 
 }

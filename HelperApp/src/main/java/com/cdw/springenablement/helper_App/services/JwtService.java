@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.context.annotation.PropertySource;
 
+/**
+ * Service which handles token generation
+ * @Author pavithra
+ */
 
 @Component
 @PropertySource("classpath:application.properties")
@@ -24,21 +28,20 @@ public class JwtService {
     @Autowired
     private UserRepository userRepository;
 
- public String generateToken(Users users , Collection<SimpleGrantedAuthority> authorities){
+    /**
+     *
+     * @param users
+     * @param authorities
+     * @return
+     */
+     public String generateToken(Users users , Collection<SimpleGrantedAuthority> authorities){
      Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
      return com.auth0.jwt.JWT.create()
              .withSubject(users.getEmail())
-             .withExpiresAt(new java.util.Date(System.currentTimeMillis()+5000*60*1000))
+             .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 3 * 60 * 60 * 1000))
              .withClaim("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
              .sign(algorithm);
 
- }
+     }
 
-    public String generateRefreshToken(Users users , Collection<SimpleGrantedAuthority> authorities){
-        Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
-        return com.auth0.jwt.JWT.create()
-                .withSubject(users.getEmail())
-                .withExpiresAt(new java.util.Date(System.currentTimeMillis()+70*60*1000))
-                .sign(algorithm);
-    }
 }

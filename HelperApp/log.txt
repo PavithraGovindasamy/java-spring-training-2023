@@ -1,0 +1,60 @@
+2023-10-05T22:15:55.110+05:30  INFO 59209 --- [main] c.c.s.helper_App.DemoApplication         : Starting DemoApplication using Java 20.0.1 with PID 59209 (/Users/pavithra/Desktop/HelperApp/target/classes started by pavithra in /Users/pavithra/Desktop/HelperApp)
+2023-10-05T22:15:55.112+05:30  INFO 59209 --- [main] c.c.s.helper_App.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
+2023-10-05T22:15:58.414+05:30  INFO 59209 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-05T22:15:58.414+05:30  INFO 59209 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-10-05T22:15:58.638+05:30  INFO 59209 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-05T22:15:59.033+05:30  INFO 59209 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-10-05T22:15:59.078+05:30  INFO 59209 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-10-05T22:15:59.081+05:30  INFO 59209 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2023-10-05T22:15:59.394+05:30  INFO 59209 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2023-10-05T22:15:59.686+05:30  INFO 59209 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-10-05T22:16:00.205+05:30  INFO 59209 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4a9bce99
+2023-10-05T22:16:00.208+05:30  INFO 59209 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-10-05T22:16:00.589+05:30  INFO 59209 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2023-10-05T22:16:01.734+05:30  INFO 59209 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-10-05T22:16:01.826+05:30 DEBUG 59209 --- [main] org.hibernate.SQL                        : alter table timeslot modify column end_time  time(6)
+2023-10-05T22:16:01.850+05:30 DEBUG 59209 --- [main] org.hibernate.SQL                        : alter table timeslot modify column start_time  time(6)
+2023-10-05T22:16:04.272+05:30  INFO 59209 --- [main] c.c.s.helper_App.DemoApplication         : Started DemoApplication in 9.914 seconds (process running for 10.553)
+2023-10-05T22:16:17.765+05:30  INFO 59209 --- [http-nio-8009-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-10-05T22:16:18.229+05:30  INFO 59209 --- [http-nio-8009-exec-2] c.c.s.helper_App.AspectForController     : Method: UserController.registerUser(..), Arguments: [class UserDto {
+    firstName: resident
+    lastName: admin
+    dateOfBirth: 2002-04-02
+    gender: FEMALE
+    email: restftfietmail@gmail.sscom
+    password: helper240902
+    role: [Role_Resident]
+    specialisation: Plumber
+}], Time: 1696524378223
+2023-10-05T22:16:18.397+05:30 DEBUG 59209 --- [http-nio-8009-exec-2] org.hibernate.SQL                        : select u1_0.id,u1_0.approved,u1_0.dob,u1_0.email,u1_0.first_name,u1_0.gender,u1_0.last_name,u1_0.password from users u1_0 where u1_0.email=?
+2023-10-05T22:16:18.399+05:30 TRACE 59209 --- [http-nio-8009-exec-2] org.hibernate.orm.jdbc.bind              : binding parameter [1] as [VARCHAR] - [restftfietmail@gmail.sscom]
+2023-10-05T22:16:18.426+05:30 DEBUG 59209 --- [http-nio-8009-exec-2] org.hibernate.SQL                        : select r1_0.user_id,r1_1.id,r1_1.name from user_roles r1_0 join roles r1_1 on r1_1.id=r1_0.role_id where r1_0.user_id=?
+2023-10-05T22:16:18.427+05:30 TRACE 59209 --- [http-nio-8009-exec-2] org.hibernate.orm.jdbc.bind              : binding parameter [1] as [INTEGER] - [16]
+2023-10-05T22:16:18.443+05:30 ERROR 59209 --- [http-nio-8009-exec-2] c.c.s.helper_App.AspectForController     : Exception occurred in method: UserController.registerUser(..), Exception message: User with this email already exists.
+2023-10-05T22:20:04.996+05:30  INFO 59209 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-10-05T22:20:05.025+05:30  INFO 59209 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2023-10-05T22:20:13.913+05:30  INFO 59262 --- [main] c.c.s.helper_App.DemoApplication         : Starting DemoApplication using Java 20.0.1 with PID 59262 (/Users/pavithra/Desktop/HelperApp/target/classes started by pavithra in /Users/pavithra/Desktop/HelperApp)
+2023-10-05T22:20:13.916+05:30  INFO 59262 --- [main] c.c.s.helper_App.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
+2023-10-05T22:20:17.102+05:30  INFO 59262 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-05T22:20:17.103+05:30  INFO 59262 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-10-05T22:20:17.249+05:30  INFO 59262 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-05T22:20:17.619+05:30  INFO 59262 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-10-05T22:20:17.658+05:30  INFO 59262 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-10-05T22:20:17.660+05:30  INFO 59262 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2023-10-05T22:20:17.985+05:30  INFO 59262 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2023-10-05T22:20:18.161+05:30  INFO 59262 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-10-05T22:20:18.658+05:30  INFO 59262 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4a9bce99
+2023-10-05T22:20:18.661+05:30  INFO 59262 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-10-05T22:20:19.049+05:30  INFO 59262 --- [main] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2023-10-05T22:20:20.213+05:30  INFO 59262 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-10-05T22:20:20.305+05:30 DEBUG 59262 --- [main] org.hibernate.SQL                        : alter table timeslot modify column end_time  time(6)
+2023-10-05T22:20:20.334+05:30 DEBUG 59262 --- [main] org.hibernate.SQL                        : alter table timeslot modify column start_time  time(6)
+2023-10-05T22:20:22.724+05:30  INFO 59262 --- [main] c.c.s.helper_App.DemoApplication         : Started DemoApplication in 9.607 seconds (process running for 10.221)
+2023-10-05T22:20:25.260+05:30  INFO 59262 --- [http-nio-8009-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-10-05T22:20:25.834+05:30 DEBUG 59262 --- [http-nio-8009-exec-1] org.hibernate.SQL                        : select u1_0.id,u1_0.approved,u1_0.dob,u1_0.email,u1_0.first_name,u1_0.gender,u1_0.last_name,u1_0.password from users u1_0 where u1_0.email=?
+2023-10-05T22:20:25.837+05:30 TRACE 59262 --- [http-nio-8009-exec-1] org.hibernate.orm.jdbc.bind              : binding parameter [1] as [VARCHAR] - [restftfietmail@gmail.sscom]
+2023-10-05T22:20:25.861+05:30 DEBUG 59262 --- [http-nio-8009-exec-1] org.hibernate.SQL                        : select r1_0.user_id,r1_1.id,r1_1.name from user_roles r1_0 join roles r1_1 on r1_1.id=r1_0.role_id where r1_0.user_id=?
+2023-10-05T22:20:25.862+05:30 TRACE 59262 --- [http-nio-8009-exec-1] org.hibernate.orm.jdbc.bind              : binding parameter [1] as [INTEGER] - [16]
+2023-10-05T22:20:25.874+05:30 ERROR 59262 --- [http-nio-8009-exec-1] trollerLoggingAndExceptionHandlingAspect : Exception occurred: User with this email already exists.
+2023-10-05T22:20:46.892+05:30  INFO 59262 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-10-05T22:20:46.919+05:30  INFO 59262 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

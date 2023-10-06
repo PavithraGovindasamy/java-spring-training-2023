@@ -172,22 +172,17 @@ public class AdminServiceImplTest {
     public  void testRemoveHelper() throws Exception {
         int helperId = 1;
         int userId = 1;
-
         Helper helper = new Helper();
         helper.setId((long) helperId);
-
+        Users users=new Users();
+        users.setId(2);
+        helper.setUser(users);
         Users user = new Users();
         user.setId(userId);
-       Set<TimeSlot> timeSlots=new HashSet<>();
-       helper.setTimeSlots(timeSlots);
+        Set<TimeSlot> timeSlots=new HashSet<>();
         List<Bookings> bookings = new ArrayList<>();
-
         when(helperRepository.findById((long) helperId)).thenReturn(Optional.of(helper));
-        when(bookingRepository.findByHelper(helper)).thenReturn(bookings);
-        when(userRepository.findById((long) userId)).thenReturn(Optional.of(user));
-
         adminService.removeHelper(Math.toIntExact(helperId));
-
 
     }
 

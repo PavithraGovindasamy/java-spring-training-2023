@@ -5,8 +5,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+/**
+ * Service class that handles to blacklist the token and to check whether a token is blacklisted
+ * @Author pavithra
+ */
 
 @Service
 @Transactional
@@ -15,14 +17,22 @@ public class TokenBlacklistService {
     @Autowired
     private BlackListTokenRepository blackListTokenRepository;
 
-
+    /**
+     * Method which adds the token to blacklist
+     * @param token
+     */
     public void addToBlacklist(String token) {
         BlackListToken blackListToken = new BlackListToken();
         blackListToken.setToken(token);
-        System.out.println("baj"+"token came"+"hsj");
         blackListTokenRepository.save(blackListToken);
-
     }
+
+
+    /**
+     * Method which checks whether a token is blacklisted or not
+     * @param token
+     * @return boolean value
+     */
 
     public boolean isTokenBlacklisted(String token) {
         BlackListToken blackListToken = blackListTokenRepository.findByToken(token);

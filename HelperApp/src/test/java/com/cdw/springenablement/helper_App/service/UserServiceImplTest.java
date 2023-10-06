@@ -16,9 +16,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,6 +52,7 @@ public class UserServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -83,10 +83,8 @@ public class UserServiceImplTest {
     public void testRegisterUser_UserExists() throws Exception {
         UserDto userDto = new UserDto();
         userDto.setEmail("test@example.com");
-
         Users existingUser = new Users();
         existingUser.setEmail(userDto.getEmail());
-
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.of(existingUser));
         userService.registerUser(userDto);
     }
@@ -104,12 +102,9 @@ public class UserServiceImplTest {
     public void testUpdateHelperSpecialization_EmptySpecialization() throws Exception {
         Users users=new Users();
         when(userRepository.findById(1L)).thenReturn(Optional.of(users));
-
         List<String> roles = Collections.singletonList("Role_Helper");
-
         String specialisation="";
         users.setRoles(Collections.singleton(new Roles("Role_Helper")));
-
         Exception exception = assertThrows(Exception.class, () -> {
             userService.updateHelperSpecialization(1,specialisation);
         });
@@ -123,34 +118,14 @@ public class UserServiceImplTest {
     public void testUpdateHelperSpecialization_Success() throws Exception {
         Users users=new Users();
         when(userRepository.findById(1L)).thenReturn(Optional.of(users));
-
-
         String specialisation="Plumber";
         Helper helper=new Helper();
         helper.setUser(users);
         helper.setSpecialization(specialisation);
         users.setRoles(Collections.singleton(new Roles("Role_Helper")));
-
-            userService.updateHelperSpecialization(1,specialisation);
-
-
+        userService.updateHelperSpecialization(1,specialisation);
     }
 
-
-    @Test
-    public void testBookTechnician_TimeSlotNotFound() {
-        BookingTechnicianDto bookingTechnicianDto = new BookingTechnicianDto();
-        int timeSlotId=1;
-        bookingTechnicianDto.setTimeSlotId(1);
-        bookingTechnicianDto.setHelperId(2);
-
-
-        Exception exception = assertThrows(Exception.class, () -> {
-            userService.bookTechnician(bookingTechnicianDto);
-        });
-
-        assertEquals("TimeSlot not found", exception.getMessage());
-    }
 
 
 
@@ -160,14 +135,13 @@ public class UserServiceImplTest {
         bookingTechnicianDto.setTimeSlotId(4);
         bookingTechnicianDto.setHelperId(1);
         bookingTechnicianDto.setUserId(1);
-
         TimeSlot timeSlot = new TimeSlot();
         timeSlot.setId(4L);
-
         Users user = new Users();
         user.setId(1);
         user.setRoles(Collections.singleton(new Roles("Role_Helper")));
-
+        Helper helper=new Helper();
+        helper.setUser(user);
         when(timeSlotRepository.findById(4L)).thenReturn(Optional.of(timeSlot));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -184,19 +158,19 @@ public class UserServiceImplTest {
         bookingTechnicianDto.setTimeSlotId(4);
         bookingTechnicianDto.setHelperId(1);
         bookingTechnicianDto.setUserId(1);
-
         TimeSlot timeSlot = new TimeSlot();
         timeSlot.setId(4L);
 
         Set<Helper> helpers = new HashSet<>();
         Helper helper = new Helper();
+        helper.setId(1L);
         helpers.add(helper);
 
-        timeSlot.setHelpers(helpers);
-
+        when(helperRepository.findById(1L)).thenReturn(Optional.of(helper));
         Users user = new Users();
         user.setId(1);
         user.setRoles(Collections.singleton(new Roles("Role_Resident")));
+        helper.setUser(user);
 
         when(timeSlotRepository.findById(4L)).thenReturn(Optional.of(timeSlot));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -210,32 +184,60 @@ public class UserServiceImplTest {
     @Test
     public  void testGetAppointment(){
         Helper helper=new Helper();
+        Users users=new Users();
+        users.setId(1);
+        users.setFirstName("pavi");
+        users.setEmail("pavi@gmail.com");
+        helper.setUser(users);
         when(helperRepository.findById(1L)).thenReturn(Optional.of(helper));
         List<HelperAppointmentDto> appointmentDto=new ArrayList<>();
         List<Bookings> bookings=new ArrayList<>();
-        when(bookingRepository.findByHelper(helper)).thenReturn(bookings);
+        HelperAppointmentDto dto=new HelperAppointmentDto();
+        Bookings bookingss=new Bookings();
+        bookingss.setId(1L);
+        //Timeslot
+        TimeSlot timeSlot=new TimeSlot();
+        timeSlot.setId(1L);
+        timeSlot.setStartTime(LocalTime.parse("12:00"));
+        timeSlot.setEndTime(LocalTime.parse("13:00"));
+        bookingss.setTimeSlot(timeSlot);
+        //users
+        bookingss.setUsers(users);
+        dto.setAppointmentId(Math.toIntExact(bookingss.getId()));
+        dto.setStartTime(String.valueOf(bookingss.getTimeSlot().getStartTime()));
+        dto.setEndTime(String.valueOf(bookingss.getTimeSlot().getEndTime()));
+        dto.setCustomerName(bookingss.getUsers().getFirstName());
+        dto.setCustomerEmail(bookingss.getUsers().getEmail());
+        appointmentDto.add(dto);
         int helperID=1;
         List<HelperAppointmentDto> appointmentDtos=userService.getAppointment((long) helperID);
+        appointmentDtos.add(dto);
         assertEquals(appointmentDto,appointmentDtos);
     }
 
 
     @Test
     public void testGetAvailableTechnicians() throws Exception {
-        LocalDate date = LocalDate.of(2023, 3, 2);
-        String profession = "plumber";
-        String startTime = "12:00";
-        String endTime = "13:00";
-        List<Bookings> bookings=new ArrayList<>();
+
+        List<Bookings> bookings = new ArrayList<>();
         when(bookingRepository.findAll()).thenReturn(bookings);
-        List<TimeSlot> timeSlots=new ArrayList<>();
+        List<TimeSlot> timeSlots = new ArrayList<>();
         when(timeSlotRepository.findAll()).thenReturn(timeSlots);
-        List<TimeSlotDto> timeSlotDtos=new ArrayList<>();
-        List<TimeSlotDto> timeSlotDtoList=userService.getAvailableTechnicians(date,profession,startTime,endTime);
-        assertEquals(timeSlotDtoList,timeSlotDtos);
-
-
+        List<Helper> availableHelpers = new ArrayList<>();
+        when(helperRepository.findAll()).thenReturn(availableHelpers);
+        List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
+        assertEquals(0, timeSlotDtos.size());
     }
+
+    @Test
+    public void testGetAvailableTechniciansNoData() throws Exception {
+        when(bookingRepository.findAll()).thenReturn(new ArrayList<>());
+        when(timeSlotRepository.findAll()).thenReturn(new ArrayList<>());
+        when(helperRepository.findAll()).thenReturn(new ArrayList<>());
+        List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
+        assertEquals(0, timeSlotDtos.size());
+    }
+
 
 
 

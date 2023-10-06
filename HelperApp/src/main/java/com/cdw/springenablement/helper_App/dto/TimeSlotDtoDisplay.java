@@ -9,7 +9,21 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * class that constructs a dto for timeslot
+ * @Author pavithra
+ */
 public class TimeSlotDtoDisplay {
+
+    /**
+     *
+     * @param id
+     * @param startTime
+     * @param endTime
+     * @param date
+     * @param helpers
+     * @return
+     */
 
     public static TimeSlotDto createTimeSlotDto(Long id, LocalTime startTime, LocalTime endTime, LocalDate date, List<Helper> helpers) {
         TimeSlotDto timeSlotDto = new TimeSlotDto();

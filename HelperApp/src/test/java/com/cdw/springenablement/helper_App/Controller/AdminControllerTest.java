@@ -104,7 +104,7 @@ public class AdminControllerTest {
         doNothing().when(adminService).approveRequest();
         ResponseEntity<ApiResponseDto> responseEntity = adminController.approveRequest();
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("approved successfully");
+                .message("Approved successfully");
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
@@ -116,7 +116,6 @@ public class AdminControllerTest {
     public void testAddNewMember() throws Exception {
         UserDto dto=new UserDto();
         dto.setEmail("test@gmail.com");
-
         doNothing().when(adminService).addNewMember(dto);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.addNewMember(dto);
         ApiResponseDto expectedResponse = new ApiResponseDto()

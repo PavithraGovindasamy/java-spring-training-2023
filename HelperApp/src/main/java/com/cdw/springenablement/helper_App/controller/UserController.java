@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-
 import java.time.LocalDate;
 import java.util.List;
-import com.cdw.springenablement.helper_App.entity.Users;
 
+/**
+ * controller that implements usersApi
+ * @Author pavithra
+ */
 @RestController
 public class UserController implements UsersApi {
 
@@ -28,81 +30,76 @@ public class UserController implements UsersApi {
 
     @Autowired
     private AuthenticationService authenticationService;
+
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     *
+     * @param userDto Registering a user (required)
+     * @return Response where the user is registered
+     */
     @Override
     public ResponseEntity<ApiResponseDto> registerUser(UserDto userDto) {
-        try {
-
-
-            int id=userService.registerUser(userDto);
-            userService.updateHelperSpecialization(id, userDto.getSpecialisation());
-            System.out.println("jsj"+ userDto.getSpecialisation());
-
-            ApiResponseDto response = new ApiResponseDto()
-                    .message("User registered successfully."+" User ID: "+id)
-                    .statusCode((long) HttpStatus.OK.value());
-           return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            ApiResponseDto response = new ApiResponseDto()
-                    .message("Registration failed: " + e.getMessage())
-                    .statusCode((long) HttpStatus.BAD_REQUEST.value());
-            System.out.println('s'+response.getStatusCode());
-            return ResponseEntity.ok(response);
-        }
+        int id = userService.registerUser(userDto);
+        userService.updateHelperSpecialization(id, userDto.getSpecialisation());
+        ApiResponseDto response = new ApiResponseDto()
+                .message("User registered successfully." + " User ID: " + id)
+                .statusCode((long) HttpStatus.OK.value());
+        return ResponseEntity.ok(response);
     }
+
+    /**
+     *
+     * @param authenticationRequest Authenticate a user with email and password (required)
+     * @return  response where response return the token
+     */
 
     @Override
     public ResponseEntity<AuthenticationResponse> loginUser(AuthenticationRequest authenticationRequest) {
-      AuthenticationResponse authenticationResponse = authenticationService.authenticate(authenticationRequest);
-
-        if (authenticationResponse != null) {
-            return ResponseEntity.ok(authenticationResponse);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(authenticationRequest);
+        return ResponseEntity.ok(authenticationResponse);
     }
 
-
-
+    /**
+     *
+     * Method which give the available technicians timeslot
+     * @return response where list of timeslot is returned
+     */
     @Override
-    public ResponseEntity<List<TimeSlotDto>> getAvailableTechnicians(LocalDate date, String profession, String startTime, String endTime) {
-        List<TimeSlotDto>  technicianDtos= null;
-        try {
-            technicianDtos = userService.getAvailableTechnicians(date, profession, startTime, endTime);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<List<TimeSlotDto>> getAvailableTechnicians() {
+        List<TimeSlotDto> technicianDtos = userService.getAvailableTechnicians();
         return ResponseEntity.ok(technicianDtos);
     }
 
+    /**
+     *
+     * @param bookingTechnicianDto Booking a slot with a technician (required)
+     * @return response where the slot is booked or not
+     */
 
     @Override
     public ResponseEntity<ApiResponseDto> bookTechnicianSlot(BookingTechnicianDto bookingTechnicianDto) {
-    try{
-
         userService.bookTechnician(bookingTechnicianDto);
         ApiResponseDto response = new ApiResponseDto()
                 .message("Booked Slot Successfully")
                 .statusCode((long) HttpStatus.OK.value());
         return ResponseEntity.ok(response);
-    }catch (Exception e) {
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Registration failed: " + e.getMessage())
-                .statusCode((long) HttpStatus.BAD_REQUEST.value());
-        return ResponseEntity.ok(response);
     }
-    }
+
+    /**
+     *
+     * @param logoutUserRequest Logout a user by invalidating the token (required)
+     * @return response where the slot is logged out or not
+     */
 
     @Override
     public ResponseEntity<ApiResponseDto> logoutUser(LogoutUserRequest logoutUserRequest) {
-        String token=logoutUserRequest.getToken();
-         tokenBlacklistService.addToBlacklist(token);
+        String token = logoutUserRequest.getToken();
+        tokenBlacklistService.addToBlacklist(token);
         ApiResponseDto response = new ApiResponseDto()
                 .message("Logged out Successfully")
                 .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);    }
+        return ResponseEntity.ok(response);
+    }
 }

@@ -2,22 +2,23 @@ package com.cdw.springenablement.helper_App.services;
 import com.cdw.springenablement.helper_App.client.models.*;
 import com.cdw.springenablement.helper_App.dto.TimeSlotDtoDisplay;
 import com.cdw.springenablement.helper_App.entity.*;
+import com.cdw.springenablement.helper_App.exception.HelperAppException;
 import com.cdw.springenablement.helper_App.repository.*;
 import com.cdw.springenablement.helper_App.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+/**
+ * Service class providing user-related functionalities.
+ * @Author pavithra
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -42,12 +43,29 @@ public class UserServiceImpl  implements UserService {
     @Autowired
     private HelperRepository helperRepository;
 
-    public int registerUser(UserDto userDto) throws Exception {
-
-
+    /**
+     * Registers a new user in the system.
+     *
+     * @param userDto
+     * @return ID of the registered user.
+     *
+     */
+    public int registerUser(UserDto userDto)  {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-
-                throw new Exception("User with this email already exists.");
+            throw new HelperAppException("User with this email already exists.");
+        }
+        List<String> roleNames = userDto.getRole();
+        Set<Roles> userRoles=new HashSet<>();
+        for (String roleName : roleNames) {
+            if (!roleName.equals("Role_Admin")) {
+                Roles role = rolesRepository.findByName(roleName);
+                if (role == null) {
+                    throw new HelperAppException("Invalid role: " + roleName);
+                }
+                userRoles.add(role);
+            } else {
+                throw new HelperAppException("Cannot register Admin");
+            }
         }
 
         Users user = new Users();
@@ -57,137 +75,136 @@ public class UserServiceImpl  implements UserService {
         user.setDateOfBirth(userDto.getDateOfBirth());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
         user.setApproved("registered");
-
-        Set<Roles> userRoles = new HashSet<>();
-
-        List<String> roleNames = userDto.getRole();
-        for (String roleName : roleNames) {
-            if (roleName.equals("Role_Admin")) {
-                throw new Exception("Cannot register Admin");
-            }
-            Roles role = rolesRepository.findByName(roleName);
-            if (role == null) {
-                throw new Exception("Role not found");
-            }
-            System.out.println("roles" + role);
-
-            userRoles.add(role);
-
-        }
         user.setRoles(userRoles);
 
-
         Users savedUser = userRepository.save(user);
-
         return savedUser.getId();
-
-
     }
 
-        public void bookTechnician(BookingTechnicianDto bookingTechnicianDto) throws Exception {
+    /**
+     * Books a technician for a specified time slot.
+     *
+     * @param bookingTechnicianDto BookingTechnicianDto object containing booking details.
+     *
+     */
+
+        public void bookTechnician(BookingTechnicianDto bookingTechnicianDto) {
         Long timeSlotId = Long.valueOf(bookingTechnicianDto.getTimeSlotId());
         Long helperId = Long.valueOf(bookingTechnicianDto.getHelperId());
-
-        TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId)
-                .orElseThrow(() -> new Exception("TimeSlot not found"));
-        Helper helper = helperRepository.findById(helperId).orElse(null);
-
-        Bookings booking = bookingRepository.findByHelperAndTimeSlot(helper, timeSlot);
+        TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId).orElse(null);
+        Bookings booking = bookingRepository.findByHelperIdAndTimeSlot(helperId, timeSlot);
             Users users = userRepository.findById(Long.valueOf(bookingTechnicianDto.getUserId())).orElse(null);
             Set<Roles> roles=users.getRoles();
-            for(Roles role:roles){
-                if(role.getName().equals("Role_Helper")){
-                    throw  new Exception("Cannot book slot for non-resident");
-                }
+            boolean isRoleHelper = roles.stream()
+                    .anyMatch(role -> role.getName().equals("Role_Helper"));
+            if (isRoleHelper) {
+                throw new HelperAppException("Cannot book slot for non-resident");
             }
-        if (timeSlot.getHelpers().contains(helper)) {
-            throw new Exception("Selected helper is already booked for the specified time slot");
+            Helper helper = helperRepository.findById(helperId).orElse(null);
+            int userId=helper.getUser().getId();
+            Users helperUser=userRepository.findById((long) userId).orElse(null);
+            Set<Roles> helperRole=helperUser.getRoles();
+            if(helperUser==null){
+                throw new HelperAppException("No such helper exists");
+            }
+                if (booking!=null) {
+            throw new HelperAppException("Selected helper is already booked for the specified time slot");
         }
-
-
-        timeSlot.getHelpers().add(helper);
         timeSlotRepository.save(timeSlot);
-
         Bookings newBooking = new Bookings();
-
         newBooking.setUsers(users);
-        newBooking.setHelper(helper);
+        newBooking.setHelperId(Math.toIntExact(helperId));
         newBooking.setTimeSlot(timeSlot);
         bookingRepository.save(newBooking);
     }
 
 
 
+    /**
+     * Retrieves a list of appointments for a specified helper.
+     *
+     * @param helperId ID of the helper.
+     *
+     */
 
     @Override
     public List<HelperAppointmentDto> getAppointment(Long helperId) {
         Helper helper = helperRepository.findById(helperId).orElse(null);
-        List<HelperAppointmentDto> appointmentDtos = new ArrayList<>();
-        System.out.println("hj" + helper);
+        int userId = helper.getUser().getId();
+        Users users = userRepository.findById((long) userId).orElse(null);
+        List<HelperAppointmentDto> appointmentDtos = null;
         if (helper != null) {
-            List<Bookings> bookings = bookingRepository.findByHelper(helper);
-            System.out.println("hj" + bookings);
+            List<Bookings> bookings = bookingRepository.findByHelperId(helperId);
+            appointmentDtos = bookings.stream()
+                    .map(booking -> {
+                        HelperAppointmentDto dto = new HelperAppointmentDto();
+                        dto.setAppointmentId(Math.toIntExact(booking.getId()));
+                        dto.setStartTime(String.valueOf(booking.getTimeSlot().getStartTime()));
+                        dto.setEndTime(String.valueOf(booking.getTimeSlot().getEndTime()));
+                        dto.setCustomerName(booking.getUsers().getFirstName() + " " + booking.getUsers().getLastName());
+                        dto.setCustomerEmail(booking.getUsers().getEmail());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
 
-            for (Bookings booking : bookings) {
-                HelperAppointmentDto dto = new HelperAppointmentDto();
-
-                dto.setAppointmentId(Math.toIntExact(booking.getId()));
-                dto.setStartTime(String.valueOf(booking.getTimeSlot().getStartTime()));
-                dto.setEndTime(String.valueOf(booking.getTimeSlot().getEndTime()));
-                dto.setCustomerName(booking.getUsers().getFirstName() + " " + booking.getUsers().getLastName());
-                dto.setCustomerEmail(booking.getUsers().getEmail());
-                System.out.println("hj" + dto);
-                appointmentDtos.add(dto);
-            }
         }
-
         return appointmentDtos;
     }
 
+    /**
+     * Retrieves available technicians for a user
+     *
+     */
 
     @Override
-    public List<TimeSlotDto> getAvailableTechnicians(LocalDate date, String profession, String startTime, String endTime) throws Exception {
+    public List<TimeSlotDto> getAvailableTechnicians() {
         List<Bookings> bookings = bookingRepository.findAll();
+        List<TimeSlot> allTimeSlots = timeSlotRepository.findAll();
+        List<TimeSlotDto> availableSlotsDtoList = allTimeSlots.stream()
+                .map(slot -> {
+                    List<Bookings> bookingsForSlot = bookingRepository.findByTimeSlotId(slot.getId());
+                    List<Long> bookedHelperIds = bookingsForSlot.stream()
+                            .map(booking -> Long.valueOf(booking.getHelperId()))
+                            .collect(Collectors.toList());
 
-        List<TimeSlot> availableSlots = timeSlotRepository.findAll();
+                    List<Helper> availableHelpers = bookedHelperIds.isEmpty() ?
+                            helperRepository.findAll() :
+                            helperRepository.findByIdNotIn(bookedHelperIds);
 
-        List<TimeSlotDto> availableSlotsDtoList = new ArrayList<>();
-
-        for (TimeSlot slot : availableSlots) {
-            List<Helper> availableHelpers = helperRepository.findByTimeSlotsNotContains(slot);
-            TimeSlotDto timeSlotDto = TimeSlotDtoDisplay.createTimeSlotDto(slot.getId(), slot.getStartTime(), slot.getEndTime(), slot.getDate(), availableHelpers);
-            availableSlotsDtoList.add(timeSlotDto);
-        }
-
-
-        System.out.println("Available TimeSlots: " + availableSlotsDtoList);
-
+                    return TimeSlotDtoDisplay.createTimeSlotDto(slot.getId(), slot.getStartTime(), slot.getEndTime(), slot.getDate(), availableHelpers);
+                })
+                .collect(Collectors.toList());
         return availableSlotsDtoList;
     }
 
 
+    /**
+     * Updates the specialization of a helper.
+     *
+     * @param userId
+     * @param specialization
+     */
 
-    public void updateHelperSpecialization(int userId, String specialization) throws Exception {
+    public void updateHelperSpecialization(int userId, String specialization)  {
         Users user = userRepository.findById((long) userId).orElse(null);
-
         if (user == null) {
-            throw new Exception("User not found with ID: " + userId);
+            throw new HelperAppException("User not found with ID: " + userId);
         }
-
         Set<Roles> roles = user.getRoles();
-        boolean isHelper = roles.stream().anyMatch(role -> role.getName().equals("Role_Helper"));
+
+        boolean isHelper = roles.stream()
+                .filter(Objects::nonNull)
+                .anyMatch(role -> "Role_Helper".equals(role.getName()));
 
         if (isHelper) {
             if (specialization != null && !specialization.trim().isEmpty()) {
                 Helper helper = new Helper();
                 helper.setUser(user);
                 helper.setSpecialization(specialization);
-
                 helperRepository.save(helper);
             } else {
-                throw new Exception("Specialization is required for helpers.");
+                throw new HelperAppException("Specialization is required for helpers.");
             }
         }
     }

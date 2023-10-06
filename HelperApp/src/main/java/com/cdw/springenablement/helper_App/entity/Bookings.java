@@ -7,6 +7,10 @@ import lombok.Setter;
 
 import java.time.LocalTime;
 
+/**
+ * Entity that stores the booking details
+ * @Author pavithra
+ */
 @Entity
 @Table(name = "bookings")
 @Getter
@@ -18,19 +22,14 @@ public class Bookings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private Users users;
 
+    @Column(name="helper_id")
+    private int helperId;
 
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "helper_id")
-    private Helper helper;
-
-
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "timeslot_id")
     private TimeSlot timeSlot;
 
@@ -42,12 +41,13 @@ public class Bookings {
         this.id = id;
     }
 
-    public Helper getHelper() {
-        return helper;
+
+    public int getHelperId() {
+        return helperId;
     }
 
-    public void setHelper(Helper helper) {
-        this.helper = helper;
+    public void setHelperId(int helperId) {
+        this.helperId = helperId;
     }
 
     public TimeSlot getTimeSlot() {

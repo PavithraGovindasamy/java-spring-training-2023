@@ -1,10 +1,13 @@
 package com.cdw.springenablement.helper_App.services;
 import com.cdw.springenablement.helper_App.client.models.AuthenticationRequest;
 import com.cdw.springenablement.helper_App.client.models.AuthenticationResponse;
+import com.cdw.springenablement.helper_App.constants.ErrorConstants;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.entity.Users;
 import com.cdw.springenablement.helper_App.exception.HelperAppException;
 import com.cdw.springenablement.helper_App.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,30 +45,26 @@ public class AuthenticationService {
 
         try {
             Users user = userRepository.findByEmail(authenticationRequest.getEmail())
-                    .orElseThrow(() -> new NoSuchElementException("User not found"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorConstants.USER_NOT_FOUND_ERROR));
 
-            if ("registered".equals(user.getApproved())) {
-                throw new HelperAppException("User is not yet approved by admin");
-            } else {
-                String plainPassword = authenticationRequest.getPassword();
-                String hashedPassword = user.getPassword();
-                if (passwordEncoder.matches(plainPassword, hashedPassword)) {
-                    authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
-                    );
-                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            if (SuceessConstants.STATUS_REGISTERED.equals(user.getApproved())) {
+                throw new HelperAppException(ErrorConstants.USER_NOT_APPROVED_MESSAGE);
+            }
+            else if(SuceessConstants.STATUS_REJECTED.equals(user.getApproved())){
+                throw new HelperAppException(ErrorConstants.USER_REJECTED_MESSAGE);
+            }
+            else {
+                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(),authenticationRequest.getPassword()));
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    System.out.println("roles"+user.getRoles());
                     user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
-
                     var jwtAccessToken = jwtService.generateToken(user, authorities);
                     authenticationResponse.setEmail(user.getEmail());
                     authenticationResponse.setAccessToken(jwtAccessToken);
-                    authenticationResponse.setMessage("Authentication successful");
-                } else {
-                    throw new HelperAppException("Invalid credentials");
-                }
+                    authenticationResponse.setMessage(SuceessConstants.AUTHENTICATION_SUCCESSFULL_MESSSAGE);
+               }
             }
-
-        } catch (RuntimeException e) {
+         catch (RuntimeException e) {
             authenticationResponse.setMessage(e.getMessage());
         } catch (Exception e) {
             authenticationResponse.setMessage("Authentication failed: " + e.getMessage());

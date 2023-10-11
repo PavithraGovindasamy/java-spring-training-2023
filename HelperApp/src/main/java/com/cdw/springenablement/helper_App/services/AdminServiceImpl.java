@@ -1,7 +1,7 @@
 package com.cdw.springenablement.helper_App.services;
-import com.cdw.springenablement.helper_App.client.models.ApprovalDto;
-import com.cdw.springenablement.helper_App.client.models.HelperDto;
-import com.cdw.springenablement.helper_App.client.models.UserDto;
+import com.cdw.springenablement.helper_App.client.models.*;
+import com.cdw.springenablement.helper_App.constants.ErrorConstants;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.entity.*;
 import com.cdw.springenablement.helper_App.exception.HelperAppException;
 import com.cdw.springenablement.helper_App.repository.*;
@@ -41,6 +41,8 @@ public class AdminServiceImpl  implements AdminService {
     @Autowired
     private HelperRepository helperRepository;
 
+
+
     /**
      *
      * @return
@@ -48,12 +50,13 @@ public class AdminServiceImpl  implements AdminService {
      */
     @Override
     public List<ApprovalDto> getApprovalRequest() {
-        List<Users> usersToApprove = userRepository.findByApproved("registered");
+
+        List<Users> usersToApprove = userRepository.findByApproved(SuceessConstants.STATUS_REGISTERED);
 
         List<ApprovalDto> approvalDtos = usersToApprove.stream()
                 .map(user -> {
                     ApprovalDto approvalDto = new ApprovalDto();
-                    approvalDto.setUserId(user.getId());
+                    approvalDto.setUserId(Math.toIntExact(user.getId()));
                     approvalDto.setEmail(user.getEmail());
                     approvalDto.setGender(user.getGender());
                     approvalDto.setFirstName(user.getFirstName());
@@ -70,12 +73,34 @@ public class AdminServiceImpl  implements AdminService {
     /**
      * Method thqt gets the approved requests
      */
-    public void  approveRequest(){
-        List<Users> usersToApprove = userRepository.findByApproved("registered");
-        usersToApprove.forEach(user -> user.setApproved("approved"));
+    public void approveRequest(ApproveRequestRequest userApproveDto) {
+        System.out.println("userAPPROVE" + userApproveDto);
+        List<Long> approvedIds = userApproveDto.getApprovalIds();
+
+        List<Users> usersToApprove = userRepository.findByIdInAndApproved(approvedIds, SuceessConstants.STATUS_REGISTERED);
+
+        if (usersToApprove.isEmpty()) {
+            throw new HelperAppException(SuceessConstants.NO_USER_APPROVE_MESSAGE);
+
+        }
+        usersToApprove.forEach(user -> user.setApproved(SuceessConstants.STATUS_APPROVED));
+
+
         userRepository.saveAll(usersToApprove);
+    }
+
+    @Override
+    public void rejectRequest(RejectRequestRequest rejectRequestRequest) {
+        List<Long> rejectedIds = rejectRequestRequest.getRejectedIds();
+        List<Users> usersToReject = userRepository.findByIdInAndApproved(rejectedIds, SuceessConstants.STATUS_REGISTERED);
+        if (usersToReject.isEmpty()) {
+        throw new HelperAppException(SuceessConstants.NO_USER_REJECT_MESSAGE);
+        }
+        usersToReject.forEach(user -> user.setApproved(SuceessConstants.STATUS_REJECTED));
+        userRepository.saveAll(usersToReject);
 
     }
+
 
     /**
      *
@@ -87,7 +112,8 @@ public class AdminServiceImpl  implements AdminService {
 
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             try {
-                throw new HelperAppException("User with this email already exists.");
+                String message= ErrorConstants.USER_ALREADY_EXISTS_ERROR;
+                throw new HelperAppException(message);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -99,7 +125,7 @@ public class AdminServiceImpl  implements AdminService {
         user.setDateOfBirth(userDto.getDateOfBirth());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setApproved("approved");
+        user.setApproved(SuceessConstants.STATUS_APPROVED);
         List<String> roleNames = userDto.getRole();
         Set<Roles> userRoles = roleNames.stream()
                 .map(roleName -> rolesRepository.findByName(roleName))
@@ -114,24 +140,25 @@ public class AdminServiceImpl  implements AdminService {
      * Method that remove the resident
      */
     @Override
-    public void removeResident(Integer residentId)  {
-        Users user = userRepository.findById(Long.valueOf(residentId)).orElse(null);
+    public void removeResident(Long residentId)  {
+        Users user = userRepository.findById(residentId).orElse(null);
         if (user != null) {
             Set<Roles> roles = user.getRoles();
             for (Bookings booking : user.getBookings()) {
                 Long timeslotId=booking.getTimeSlot().getId();
                 TimeSlot timeSlot=timeSlotRepository.findById(timeslotId).orElse(null);
-                timeSlot.setBooked(false);
                 bookingRepository.delete(booking);
             }
             boolean isResident = roles.stream().anyMatch(role -> role.getName().equals("Role_Resident"));
             if (isResident) {
                 userRepository.deleteById(Long.valueOf(residentId));
             } else {
-                throw  new HelperAppException("cannot delete ..not a resident");
+                String message= ErrorConstants.DELETE_NON_RESIDENT_ERROR;
+                throw  new HelperAppException(message);
             }
         } else {
-           throw  new HelperAppException("User Not found");
+            String message= ErrorConstants.USER_NOT_FOUND_ERROR;
+           throw  new HelperAppException(message);
         }
     }
 
@@ -141,13 +168,14 @@ public class AdminServiceImpl  implements AdminService {
      * Method that remove the helper
      */
     @Override
-    public void removeHelper(Integer helperId)  {
-        Helper helper = helperRepository.findById(Long.valueOf(helperId)).orElse(null);
-        if (helper == null) {
-            throw new HelperAppException("Helper not found.");
+    public void removeHelper(Long helperId)  {
+        Helper helper = helperRepository.findById(helperId).orElse(null);
+        if (helper != null) {
+            String message= ErrorConstants.HELPER_NOT_FOUND_ERROR;
+            throw new HelperAppException(message);
         }
-        int userId = Math.toIntExact(helper.getUser().getId());
-        Users user = userRepository.findById(Long.valueOf(userId)).orElse(null);
+        Long userId = helper.getUser().getId();
+        Users user = userRepository.findById(userId).orElse(null);
         if (user != null) {
             userRepository.delete(user);
         }

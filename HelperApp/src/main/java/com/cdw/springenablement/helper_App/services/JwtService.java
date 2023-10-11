@@ -1,4 +1,5 @@
 package com.cdw.springenablement.helper_App.services;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.entity.Users;
 import com.cdw.springenablement.helper_App.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class JwtService {
      Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
      return com.auth0.jwt.JWT.create()
              .withSubject(users.getEmail())
-             .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 3 * 60 * 60 * 1000))
+             .withExpiresAt(new java.util.Date(System.currentTimeMillis() + SuceessConstants.TIME_LIMIT))
              .withClaim("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
              .sign(algorithm);
 

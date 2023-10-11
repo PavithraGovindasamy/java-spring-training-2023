@@ -1,15 +1,26 @@
 openapi: 3.0.3
 info:
-  title: Helper App
+  title: Helper App Application
   description: Helper App that allows Residents of an apartment to hire and schedule Home services
   version: 3.1.2
 servers:
-  - url: https://localhost:8001
+  - url: https://localhost:8009
+tags:
+  - name : Admin
+    description: Admin Operations are handled here
+  - name : Residents
+    description : Resident basic operations to hire helper are done here
+  - name: Helper
+    description: Helpers Operations are handled here
+  - name : Authentication
+    description : Registration,login ,logout operations are managed here
+
+
 paths:
-  /users/register:
+  /auth/register:
     post:
       tags:
-        - Users
+        - Auth
       summary: Create a new user
       operationId: registerUser
       requestBody:
@@ -27,12 +38,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
-          description: Bad request
+          description: UnAuthorised access
 
-  /api/login:
+
+  /auth/login:
     post:
       tags:
-        - Users
+        - Auth
       summary: Authenticate User
       operationId: loginUser
       requestBody:
@@ -58,10 +70,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /loggout:
+  /auth/logout:
     post:
       tags:
-        - Users
+        - Auth
       summary: Logout a user
       operationId: logoutUser
       requestBody:
@@ -85,88 +97,10 @@ paths:
           description: Unauthorized access
 
 
-  /users/hireHelper:
+  /residents/book-technician:
     post:
       tags:
-        - Users
-      summary: Hiring a technician
-      requestBody:
-        description: Booking/Hiring a technician
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BookingTechnicianDto'
-      responses:
-        '201':
-          description: Booked Technician Successfully
-        '401':
-          description: Bad request
-
-
-  /helpers:
-    post:
-      tags:
-        - Helpers
-      summary: Create a new helper
-      operationId: createHelper
-      requestBody:
-        description: Creating a new helper
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HelperDto'
-      responses:
-        '201':
-          description: Helper created successfully
-        '401':
-          description: Unauthorized access
-  /admin/update:
-    put:
-      tags:
-        - Admin
-      summary: Update helper information
-      operationId: updateHelper
-      requestBody:
-        description: Updating helper information
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HelperDto'
-      responses:
-        '200':
-          description: Slot Booked Successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseDto'
-        '401':
-          description: Unauthorized access
-  /helpers/{helperId}:
-    delete:
-      tags:
-        - Helpers
-      summary: Delete a helper
-      operationId: deleteHelper
-      parameters:
-        - name: helperId
-          in: path
-          description: ID of the helper to be deleted
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Helper deleted successfully
-        '401':
-          description: Unauthorized access
-
-  /users/residents/book-technician:
-    post:
-      tags:
-        - Users
+        - Residents
       summary: Book a slot with a technician
       operationId: bookTechnicianSlot
       requestBody:
@@ -185,10 +119,14 @@ paths:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: Unauthorized access
-  /users/getAvailableTechnicians:
+      security:
+        - bearerAuth: []
+
+
+  /residents/get-available-technicians:
     get:
       tags:
-        - Users
+        - Residents
       summary: Get Available Technicians
       operationId: getAvailableTechnicians
       responses:
@@ -202,8 +140,35 @@ paths:
                   $ref: '#/components/schemas/TimeSlotDto'
         '401':
           description: Unauthorized access
+      security:
+        - bearerAuth: []
 
-  /admin/add:
+
+  /admin:
+    put:
+      tags:
+        - Admin
+      summary: Update Helper/Resident information
+      operationId: updateHelper
+      requestBody:
+        description: Updating Helper/Resident  information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelperDto'
+      responses:
+        '200':
+          description: Slot Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
     post:
       tags:
         - Admin
@@ -225,8 +190,11 @@ paths:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: Unauthorized access
+      security:
+        - bearerAuth: []
 
-  /admin/removeResident/{residentId}:
+
+  /admin/remove-resident/{residentId}:
     delete:
       tags:
         - Admin
@@ -239,6 +207,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: Member removed successfully
@@ -248,7 +217,11 @@ paths:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: Unauthorized access
-  /admin/removeHelper/{helperId}:
+      security:
+        - bearerAuth: []
+
+
+  /admin/remove-helper/{helperId}:
     delete:
       tags:
         - Admin
@@ -261,6 +234,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: Member removed successfully
@@ -270,7 +244,11 @@ paths:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: Unauthorized access
-  /admin/getApprovalRequest:
+      security:
+        - bearerAuth: []
+
+
+  /admin/get-approval-request:
     get:
       tags:
         - Admin
@@ -287,22 +265,69 @@ paths:
                   $ref: '#/components/schemas/ApprovalDto'
         '401':
           description: Unauthorised access
-  /admin/approveRequest:
+      security:
+        - bearerAuth: []
+
+  /admin/approve-request:
     put:
       tags:
         - Admin
       summary: approve the request
       operationId: approveRequest
+      requestBody:
+        required : true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approvalIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
       responses:
         '200':
-          description: Member removed successfully
+          description: Approved request successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: Unauthorized access
+      security:
+        - bearerAuth: []
 
+
+  /admin/reject-request:
+    put:
+      tags:
+        - Admin
+      summary: reject the request
+      operationId: rejectRequest
+      requestBody:
+        required : true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejectedIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+      responses:
+        '200':
+          description: Rejecting request successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
 
 
 
@@ -330,6 +355,9 @@ paths:
                   $ref: '#/components/schemas/HelperAppointmentDto'
         '401':
           description: Unauthorized access
+      security:
+        - bearerAuth: []
+
 components:
   schemas:
     UserDto:
@@ -337,25 +365,34 @@ components:
       properties:
         firstName:
           type: string
+          example: Pavi
         lastName:
           type: string
+          example: G
         dateOfBirth:
           type: string
           format: date
+          example: 1990-01-01
         gender:
           type: string
+          example: Female
         email:
           type: string
           format: email
+          example: pavi@gmail.com
         password:
           type: string
           minLength: 8
+          example: password123
         role:
           type: array
           items:
             type: string
+          example: ["resident"]
         specialisation:
           type: string
+          example: plumber
+
     Roles:
       type: string
     BookingTechnicianDto:
@@ -363,29 +400,43 @@ components:
       properties:
         userId:
           type: integer
+          format: int64
+          example: 1
         helperId:
           type: integer
+          format: int64
+          example: 1
         timeSlotId:
           type: integer
+          format: int64
+          example: 10
         gender:
           type: string
+          example: Male
         email:
           type: string
           format: email
+          example: pavi@gmail.com
         password:
           type: string
+
     HelperDto:
       type: object
       properties:
         userId:
           type: integer
+          format: int64
+          example: 1
         firstName:
           type: string
+          example: abc
         lastName:
           type: string
+          example : g
         dateOfBirth:
           type: string
           format: date
+          example: 1990-01-01
         gender:
           type: string
         email:
@@ -442,6 +493,7 @@ components:
       properties:
         appointmentId:
           type: integer
+          format: int64
         startTime:
           type: string
           format: time
@@ -458,6 +510,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         startTime:
           type: string
           format: time
@@ -501,6 +554,27 @@ components:
         email:
           type: string
           format: email
+    UserApproveDto:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: string
+    AdminResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+        userIDs:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 
 
 

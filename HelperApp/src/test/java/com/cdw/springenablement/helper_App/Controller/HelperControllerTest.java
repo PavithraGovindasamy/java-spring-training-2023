@@ -37,9 +37,9 @@ public class HelperControllerTest {
 
     @Test
     public void testGetHelperAppointments(){
-        int helperId=1;
+        Long helperId=1L;
         List<HelperAppointmentDto> appointmentDtos=new ArrayList<>();
-        when(userService.getAppointment((long) helperId)).thenReturn(appointmentDtos);
+        when(userService.getAppointment( helperId)).thenReturn(appointmentDtos);
         ResponseEntity<List<HelperAppointmentDto>> helperAppointmentDtos= helperController.getHelperAppointments((long) helperId);
         assertEquals(appointmentDtos,helperAppointmentDtos.getBody());
 

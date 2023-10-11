@@ -1,4 +1,6 @@
 package com.cdw.springenablement.helper_App.config;
+import com.cdw.springenablement.helper_App.constants.ErrorConstants;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,8 +24,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         return  username -> userRepository.findByEmail(username).orElseThrow(()->
-                new UsernameNotFoundException("User not found")
-
+                new UsernameNotFoundException(ErrorConstants.USER_NOT_FOUND_ERROR)
         );
     }
 
@@ -38,8 +39,8 @@ public class ApplicationConfig {
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
      return configuration.getAuthenticationManager();

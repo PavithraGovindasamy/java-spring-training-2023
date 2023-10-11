@@ -1,8 +1,7 @@
 package com.cdw.springenablement.helper_App.services.interfaces;
 
-import com.cdw.springenablement.helper_App.client.models.ApprovalDto;
-import com.cdw.springenablement.helper_App.client.models.HelperDto;
-import com.cdw.springenablement.helper_App.client.models.UserDto;
+import com.cdw.springenablement.helper_App.client.models.*;
+
 import java.util.List;
 
 /**
@@ -13,11 +12,14 @@ public interface AdminService {
 
     void addNewMember(UserDto userDto) ;
 
-    void removeResident(Integer residentId) ;
+    void removeResident(Long residentId) ;
 
-    void removeHelper(Integer helperId) ;
+    void removeHelper(Long helperId) ;
 
     void updateMember(HelperDto helperDto);
 
-    void approveRequest();
+    void approveRequest(ApproveRequestRequest userApproveDto);
+
+    void rejectRequest(RejectRequestRequest rejectRequestRequest);
+
 }

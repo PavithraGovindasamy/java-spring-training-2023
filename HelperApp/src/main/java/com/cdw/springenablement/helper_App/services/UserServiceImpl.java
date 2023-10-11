@@ -1,5 +1,7 @@
 package com.cdw.springenablement.helper_App.services;
 import com.cdw.springenablement.helper_App.client.models.*;
+import com.cdw.springenablement.helper_App.constants.ErrorConstants;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.dto.TimeSlotDtoDisplay;
 import com.cdw.springenablement.helper_App.entity.*;
 import com.cdw.springenablement.helper_App.exception.HelperAppException;
@@ -11,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl  implements UserService {
+public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
@@ -43,28 +46,32 @@ public class UserServiceImpl  implements UserService {
     @Autowired
     private HelperRepository helperRepository;
 
+    String registered= SuceessConstants.STATUS_REGISTERED;
+
+    String approved= SuceessConstants.STATUS_APPROVED;
+
     /**
      * Registers a new user in the system.
      *
      * @param userDto
      * @return ID of the registered user.
-     *
      */
-    public int registerUser(UserDto userDto)  {
+    public Long registerUser(UserDto userDto)  {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new HelperAppException("User with this email already exists.");
+            throw new HelperAppException(ErrorConstants.USER_ALREADY_EXISTS_ERROR);
         }
         List<String> roleNames = userDto.getRole();
         Set<Roles> userRoles=new HashSet<>();
         for (String roleName : roleNames) {
-            if (!roleName.equals("Role_Admin")) {
+            if (!roleName.equals(SuceessConstants.ROLE_ADMIN)) {
                 Roles role = rolesRepository.findByName(roleName);
                 if (role == null) {
-                    throw new HelperAppException("Invalid role: " + roleName);
+                    throw new HelperAppException(ErrorConstants.INVALID_ROLE_ERROR + roleName);
                 }
                 userRoles.add(role);
-            } else {
-                throw new HelperAppException("Cannot register Admin");
+            }
+            else {
+                throw new HelperAppException(ErrorConstants.CANNOT_REGISTER_ADMIN_ERROR);
             }
         }
 
@@ -75,7 +82,7 @@ public class UserServiceImpl  implements UserService {
         user.setDateOfBirth(userDto.getDateOfBirth());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setApproved("registered");
+        user.setApproved(registered);
         user.setRoles(userRoles);
 
         Users savedUser = userRepository.save(user);
@@ -97,24 +104,24 @@ public class UserServiceImpl  implements UserService {
             Users users = userRepository.findById(Long.valueOf(bookingTechnicianDto.getUserId())).orElse(null);
             Set<Roles> roles=users.getRoles();
             boolean isRoleHelper = roles.stream()
-                    .anyMatch(role -> role.getName().equals("Role_Helper"));
+                    .anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_HELPER));
             if (isRoleHelper) {
-                throw new HelperAppException("Cannot book slot for non-resident");
+                throw new HelperAppException(ErrorConstants.CANNOT_BOOK_NON_RESIDENT_ERROR);
             }
             Helper helper = helperRepository.findById(helperId).orElse(null);
-            int userId=helper.getUser().getId();
+            Long userId=helper.getUser().getId();
             Users helperUser=userRepository.findById((long) userId).orElse(null);
             Set<Roles> helperRole=helperUser.getRoles();
             if(helperUser==null){
-                throw new HelperAppException("No such helper exists");
+                throw new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR);
             }
                 if (booking!=null) {
-            throw new HelperAppException("Selected helper is already booked for the specified time slot");
+            throw new HelperAppException(ErrorConstants.HELPER_ALREADY_BOOKED_ERROR);
         }
         timeSlotRepository.save(timeSlot);
         Bookings newBooking = new Bookings();
         newBooking.setUsers(users);
-        newBooking.setHelperId(Math.toIntExact(helperId));
+        newBooking.setHelperId(helperId);
         newBooking.setTimeSlot(timeSlot);
         bookingRepository.save(newBooking);
     }
@@ -131,7 +138,7 @@ public class UserServiceImpl  implements UserService {
     @Override
     public List<HelperAppointmentDto> getAppointment(Long helperId) {
         Helper helper = helperRepository.findById(helperId).orElse(null);
-        int userId = helper.getUser().getId();
+        Long userId = helper.getUser().getId();
         Users users = userRepository.findById((long) userId).orElse(null);
         List<HelperAppointmentDto> appointmentDtos = null;
         if (helper != null) {
@@ -139,7 +146,7 @@ public class UserServiceImpl  implements UserService {
             appointmentDtos = bookings.stream()
                     .map(booking -> {
                         HelperAppointmentDto dto = new HelperAppointmentDto();
-                        dto.setAppointmentId(Math.toIntExact(booking.getId()));
+                        dto.setAppointmentId(booking.getId());
                         dto.setStartTime(String.valueOf(booking.getTimeSlot().getStartTime()));
                         dto.setEndTime(String.valueOf(booking.getTimeSlot().getEndTime()));
                         dto.setCustomerName(booking.getUsers().getFirstName() + " " + booking.getUsers().getLastName());
@@ -186,16 +193,16 @@ public class UserServiceImpl  implements UserService {
      * @param specialization
      */
 
-    public void updateHelperSpecialization(int userId, String specialization)  {
+    public void updateHelperSpecialization(Long userId, String specialization)  {
         Users user = userRepository.findById((long) userId).orElse(null);
         if (user == null) {
-            throw new HelperAppException("User not found with ID: " + userId);
+            throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR_FORMAT + userId);
         }
         Set<Roles> roles = user.getRoles();
 
         boolean isHelper = roles.stream()
                 .filter(Objects::nonNull)
-                .anyMatch(role -> "Role_Helper".equals(role.getName()));
+                .anyMatch(role -> SuceessConstants.ROLE_HELPER.equals(role.getName()));
 
         if (isHelper) {
             if (specialization != null && !specialization.trim().isEmpty()) {
@@ -204,7 +211,7 @@ public class UserServiceImpl  implements UserService {
                 helper.setSpecialization(specialization);
                 helperRepository.save(helper);
             } else {
-                throw new HelperAppException("Specialization is required for helpers.");
+                throw new HelperAppException(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR);
             }
         }
     }

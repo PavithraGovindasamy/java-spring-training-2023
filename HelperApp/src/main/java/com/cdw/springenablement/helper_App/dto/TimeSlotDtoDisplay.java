@@ -27,7 +27,7 @@ public class TimeSlotDtoDisplay {
 
     public static TimeSlotDto createTimeSlotDto(Long id, LocalTime startTime, LocalTime endTime, LocalDate date, List<Helper> helpers) {
         TimeSlotDto timeSlotDto = new TimeSlotDto();
-        timeSlotDto.setId(Math.toIntExact(id));
+        timeSlotDto.setId(id);
         timeSlotDto.setStartTime(String.valueOf(startTime));
         timeSlotDto.setEndTime(String.valueOf(endTime));
         timeSlotDto.setDate(date);

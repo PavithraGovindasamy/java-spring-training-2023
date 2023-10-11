@@ -5,7 +5,6 @@ import com.cdw.springenablement.helper_App.client.models.HelperAppointmentDto;
 import com.cdw.springenablement.helper_App.client.models.TimeSlotDto;
 import com.cdw.springenablement.helper_App.client.models.UserDto;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -16,12 +15,12 @@ public  interface UserService {
 
 
 
-    int registerUser(UserDto userDto) ;
+    Long registerUser(UserDto userDto) ;
 
       void bookTechnician(BookingTechnicianDto bookingTechnicianDto) ;
 
     List<HelperAppointmentDto> getAppointment(Long helperId);
     List<TimeSlotDto> getAvailableTechnicians() ;
 
-    void updateHelperSpecialization(int id, String specialisation) ;
+    void updateHelperSpecialization(Long id, String specialisation) ;
 }

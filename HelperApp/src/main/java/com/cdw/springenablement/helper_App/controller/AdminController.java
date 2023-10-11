@@ -1,13 +1,11 @@
 package com.cdw.springenablement.helper_App.controller;
 
 import com.cdw.springenablement.helper_App.client.api.AdminApi;
-import com.cdw.springenablement.helper_App.client.models.ApiResponseDto;
-import com.cdw.springenablement.helper_App.client.models.ApprovalDto;
-import com.cdw.springenablement.helper_App.client.models.HelperDto;
-import com.cdw.springenablement.helper_App.client.models.UserDto;
+import com.cdw.springenablement.helper_App.client.models.*;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.services.interfaces.AdminService;
+import com.cdw.springenablement.helper_App.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,16 +35,33 @@ public class AdminController implements AdminApi {
     /**
      * Approves an approval request.
      *
-     * @return  the result of the approval operation.
+     * @return the result of the approval operation.
      */
     @Override
-    public ResponseEntity<ApiResponseDto> approveRequest() {
-        adminService.approveRequest();
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Approved successfully")
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponseDto> approveRequest(ApproveRequestRequest approveRequestRequest) {
+        adminService.approveRequest(approveRequestRequest);
+        String successMessage = SuceessConstants.APPROVED_SUCCESSFULLY_MESSAGE;
+        return ResponseUtil.generateSuccessResponse(successMessage);
     }
+
+    /**
+     * Approves an approval request.
+     *
+     * @return  the result of the rejection request
+     */
+
+
+    @Override
+    public ResponseEntity<ApiResponseDto> rejectRequest(RejectRequestRequest rejectRequestRequest) {
+        System.out.println("njsn");
+        adminService.rejectRequest(rejectRequestRequest);
+        String successMessage = SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE;
+        System.out.println("njsn"+"gh"+ successMessage);
+
+        return ResponseUtil.generateSuccessResponse(successMessage);
+    }
+
+
 
     /**
      * Adds a new member to the system.
@@ -57,10 +72,8 @@ public class AdminController implements AdminApi {
     @Override
     public ResponseEntity<ApiResponseDto> addNewMember(UserDto userDto) {
         adminService.addNewMember(userDto);
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Member added successfully")
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+        String successMessage = SuceessConstants.MEMBER_ADDED_SUCCESSFULLY_MESSAGE;
+        return ResponseUtil.generateSuccessResponse(successMessage);
     }
 
     /**
@@ -70,12 +83,10 @@ public class AdminController implements AdminApi {
      * @return  the result of the removal operation.
      */
     @Override
-    public ResponseEntity<ApiResponseDto> removeResident(Integer residentId) {
+    public ResponseEntity<ApiResponseDto> removeResident(Long residentId) {
         adminService.removeResident(residentId);
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Resident removed successfully")
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+        String successMessage = SuceessConstants.RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE;
+        return ResponseUtil.generateSuccessResponse(successMessage);
     }
 
     /**
@@ -85,12 +96,10 @@ public class AdminController implements AdminApi {
      * @return  the result of the removal operation.
      */
     @Override
-    public ResponseEntity<ApiResponseDto> removeHelper(Integer helperId) {
+    public ResponseEntity<ApiResponseDto> removeHelper(Long helperId) {
         adminService.removeHelper(helperId);
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Helper removed successfully")
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+        String successMessage = SuceessConstants.HELPER_REMOVED_SUCCESSFULLY_MESSAGE;
+        return ResponseUtil.generateSuccessResponse(successMessage);
     }
 
     /**
@@ -102,9 +111,7 @@ public class AdminController implements AdminApi {
     @Override
     public ResponseEntity<ApiResponseDto> updateHelper(HelperDto helperDto) {
         adminService.updateMember(helperDto);
-        ApiResponseDto response = new ApiResponseDto()
-                .message("Updated Successfully")
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+        String successMessage = SuceessConstants.UPDATED_SUCCESSFULLY_MESSAGE;
+        return ResponseUtil.generateSuccessResponse(successMessage);
     }
 }

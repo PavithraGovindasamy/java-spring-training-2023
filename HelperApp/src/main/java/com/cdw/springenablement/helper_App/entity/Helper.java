@@ -21,9 +21,10 @@ public class Helper {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.LAZY,cascade ={ CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
     @JoinColumn(name = "user_id")
     private Users user;
+
 
     @Column(name = "specialization")
     private String specialization;

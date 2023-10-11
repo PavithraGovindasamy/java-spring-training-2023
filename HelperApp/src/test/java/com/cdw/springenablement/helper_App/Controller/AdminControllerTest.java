@@ -1,9 +1,7 @@
 package com.cdw.springenablement.helper_App.Controller;
 
-import com.cdw.springenablement.helper_App.client.models.ApiResponseDto;
-import com.cdw.springenablement.helper_App.client.models.ApprovalDto;
-import com.cdw.springenablement.helper_App.client.models.HelperDto;
-import com.cdw.springenablement.helper_App.client.models.UserDto;
+import com.cdw.springenablement.helper_App.client.models.*;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.controller.AdminController;
 import com.cdw.springenablement.helper_App.services.interfaces.AdminService;
 import org.junit.Test;
@@ -59,7 +57,7 @@ public class AdminControllerTest {
         doNothing().when(adminService).updateMember(helperDto);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.updateHelper(helperDto);
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("Updated Successfully");
+                .message(SuceessConstants.UPDATED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
@@ -77,11 +75,11 @@ public class AdminControllerTest {
 
     @Test
     public void testRemoveHelper() throws Exception {
-        int helperId=1;
+        Long helperId=1L;
         doNothing().when(adminService).removeHelper(helperId);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.removeHelper(helperId);
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("Helper removed successfully");
+                .message(SuceessConstants.HELPER_REMOVED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
@@ -89,27 +87,37 @@ public class AdminControllerTest {
 
     @Test
     public void testRemoveResident() throws Exception {
-        int residentId=1;
+        Long residentId=1L;
         doNothing().when(adminService).removeResident(residentId);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.removeResident(residentId);
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("Resident removed successfully");
-
+                .message(SuceessConstants.RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
     }
 
     @Test
     public void testApproveRequest(){
-        doNothing().when(adminService).approveRequest();
-        ResponseEntity<ApiResponseDto> responseEntity = adminController.approveRequest();
+        ApproveRequestRequest approveRequestRequest=new ApproveRequestRequest();
+        doNothing().when(adminService).approveRequest(approveRequestRequest);
+        ResponseEntity<ApiResponseDto> responseEntity = adminController.approveRequest(approveRequestRequest);
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("Approved successfully");
+                .message(SuceessConstants.APPROVED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
+    }
 
+    @Test
+    public void testRejectRequest(){
+        RejectRequestRequest rejectRequestRequest=new RejectRequestRequest();
+        doNothing().when(adminService).rejectRequest(rejectRequestRequest);
+        ResponseEntity<ApiResponseDto> responseEntity = adminController.rejectRequest(rejectRequestRequest);
+        ApiResponseDto expectedResponse = new ApiResponseDto()
+                .message(SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE);
 
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
     }
 
     @Test
@@ -119,7 +127,7 @@ public class AdminControllerTest {
         doNothing().when(adminService).addNewMember(dto);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.addNewMember(dto);
         ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message("Member added successfully");
+                .message(SuceessConstants.MEMBER_ADDED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());

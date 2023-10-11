@@ -24,9 +24,6 @@ public class TimeSlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "isBooked")
-    private Boolean isBooked;
-
     @Column(name = "start_time")
     private LocalTime startTime;
 
@@ -51,15 +48,6 @@ public class TimeSlot {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public Boolean getBooked() {
-        return isBooked;
-    }
-
-    public void setBooked(Boolean booked) {
-        isBooked = booked;
-    }
-
     public LocalTime getStartTime() {
         return startTime;
     }

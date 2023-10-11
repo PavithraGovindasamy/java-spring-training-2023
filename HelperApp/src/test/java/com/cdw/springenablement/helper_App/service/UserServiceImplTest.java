@@ -16,14 +16,12 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,13 +66,13 @@ public class UserServiceImplTest {
         userDto.setRole(roles);
 
         Users savedUser = new Users();
-        savedUser.setId(1);
+        savedUser.setId(1L);
 
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(rolesRepository.findByName("Role_Resident")).thenReturn(new Roles());
         when(userRepository.save(any(Users.class))).thenReturn(savedUser);
 
-        int userId = userService.registerUser(userDto);
+        Long userId = userService.registerUser(userDto);
 
         assertEquals(1, userId);
     }
@@ -104,9 +102,10 @@ public class UserServiceImplTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(users));
         List<String> roles = Collections.singletonList("Role_Helper");
         String specialisation="";
+        Long id=1L;
         users.setRoles(Collections.singleton(new Roles("Role_Helper")));
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.updateHelperSpecialization(1,specialisation);
+            userService.updateHelperSpecialization(id,specialisation);
         });
 
         assertEquals("Specialization is required for helpers.", exception.getMessage());
@@ -121,9 +120,10 @@ public class UserServiceImplTest {
         String specialisation="Plumber";
         Helper helper=new Helper();
         helper.setUser(users);
+        Long userId=1L;
         helper.setSpecialization(specialisation);
         users.setRoles(Collections.singleton(new Roles("Role_Helper")));
-        userService.updateHelperSpecialization(1,specialisation);
+        userService.updateHelperSpecialization(userId,specialisation);
     }
 
 
@@ -132,18 +132,22 @@ public class UserServiceImplTest {
     @Test
     public void testBookTechnician_NonResidentBook() {
         BookingTechnicianDto bookingTechnicianDto = new BookingTechnicianDto();
-        bookingTechnicianDto.setTimeSlotId(4);
-        bookingTechnicianDto.setHelperId(1);
-        bookingTechnicianDto.setUserId(1);
+        long timeSlotID=4L;
+        long helperId=1L;
+        long userId=1L;
+        bookingTechnicianDto.setTimeSlotId(timeSlotID);
+        bookingTechnicianDto.setHelperId(helperId);
+        bookingTechnicianDto.setUserId(userId);
         TimeSlot timeSlot = new TimeSlot();
-        timeSlot.setId(4L);
+
+        timeSlot.setId(timeSlotID);
         Users user = new Users();
-        user.setId(1);
+        user.setId(userId);
         user.setRoles(Collections.singleton(new Roles("Role_Helper")));
         Helper helper=new Helper();
         helper.setUser(user);
-        when(timeSlotRepository.findById(4L)).thenReturn(Optional.of(timeSlot));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(timeSlotRepository.findById(timeSlotID)).thenReturn(Optional.of(timeSlot));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         Exception exception = assertThrows(Exception.class, () -> {
             userService.bookTechnician(bookingTechnicianDto);
@@ -155,25 +159,28 @@ public class UserServiceImplTest {
     @Test
     public void testBookTechnician_Success() throws Exception {
         BookingTechnicianDto bookingTechnicianDto = new BookingTechnicianDto();
-        bookingTechnicianDto.setTimeSlotId(4);
-        bookingTechnicianDto.setHelperId(1);
-        bookingTechnicianDto.setUserId(1);
+        long timeSlotID=4L;
+        long helperId=1L;
+        long userId=1L;
+        bookingTechnicianDto.setTimeSlotId(timeSlotID);
+        bookingTechnicianDto.setHelperId(helperId);
+        bookingTechnicianDto.setUserId(userId);
         TimeSlot timeSlot = new TimeSlot();
-        timeSlot.setId(4L);
+        timeSlot.setId(timeSlotID);
 
         Set<Helper> helpers = new HashSet<>();
         Helper helper = new Helper();
-        helper.setId(1L);
+        helper.setId(helperId);
         helpers.add(helper);
 
         when(helperRepository.findById(1L)).thenReturn(Optional.of(helper));
         Users user = new Users();
-        user.setId(1);
+        user.setId(userId);
         user.setRoles(Collections.singleton(new Roles("Role_Resident")));
         helper.setUser(user);
 
-        when(timeSlotRepository.findById(4L)).thenReturn(Optional.of(timeSlot));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(timeSlotRepository.findById(timeSlotID)).thenReturn(Optional.of(timeSlot));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         Bookings bookings = new Bookings();
         bookings.setUsers(user);
@@ -185,7 +192,8 @@ public class UserServiceImplTest {
     public  void testGetAppointment(){
         Helper helper=new Helper();
         Users users=new Users();
-        users.setId(1);
+        long userId=1L;
+        users.setId(userId);
         users.setFirstName("pavi");
         users.setEmail("pavi@gmail.com");
         helper.setUser(users);
@@ -194,23 +202,25 @@ public class UserServiceImplTest {
         List<Bookings> bookings=new ArrayList<>();
         HelperAppointmentDto dto=new HelperAppointmentDto();
         Bookings bookingss=new Bookings();
-        bookingss.setId(1L);
+        long bookingId=2L;
+        bookingss.setId(bookingId);
         //Timeslot
         TimeSlot timeSlot=new TimeSlot();
-        timeSlot.setId(1L);
+        long timeSlotId=1L;
+        timeSlot.setId(timeSlotId);
         timeSlot.setStartTime(LocalTime.parse("12:00"));
         timeSlot.setEndTime(LocalTime.parse("13:00"));
         bookingss.setTimeSlot(timeSlot);
         //users
         bookingss.setUsers(users);
-        dto.setAppointmentId(Math.toIntExact(bookingss.getId()));
+        dto.setAppointmentId(bookingss.getId());
         dto.setStartTime(String.valueOf(bookingss.getTimeSlot().getStartTime()));
         dto.setEndTime(String.valueOf(bookingss.getTimeSlot().getEndTime()));
         dto.setCustomerName(bookingss.getUsers().getFirstName());
         dto.setCustomerEmail(bookingss.getUsers().getEmail());
         appointmentDto.add(dto);
-        int helperID=1;
-        List<HelperAppointmentDto> appointmentDtos=userService.getAppointment((long) helperID);
+        long helperID=1;
+        List<HelperAppointmentDto> appointmentDtos=userService.getAppointment(helperID);
         appointmentDtos.add(dto);
         assertEquals(appointmentDto,appointmentDtos);
     }
@@ -218,13 +228,11 @@ public class UserServiceImplTest {
 
     @Test
     public void testGetAvailableTechnicians() throws Exception {
-
         List<Bookings> bookings = new ArrayList<>();
         when(bookingRepository.findAll()).thenReturn(bookings);
         List<TimeSlot> timeSlots = new ArrayList<>();
         when(timeSlotRepository.findAll()).thenReturn(timeSlots);
         List<Helper> availableHelpers = new ArrayList<>();
-        when(helperRepository.findAll()).thenReturn(availableHelpers);
         List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
         assertEquals(0, timeSlotDtos.size());
     }
@@ -233,7 +241,6 @@ public class UserServiceImplTest {
     public void testGetAvailableTechniciansNoData() throws Exception {
         when(bookingRepository.findAll()).thenReturn(new ArrayList<>());
         when(timeSlotRepository.findAll()).thenReturn(new ArrayList<>());
-        when(helperRepository.findAll()).thenReturn(new ArrayList<>());
         List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
         assertEquals(0, timeSlotDtos.size());
     }

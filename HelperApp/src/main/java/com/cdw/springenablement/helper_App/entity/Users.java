@@ -1,7 +1,7 @@
 package com.cdw.springenablement.helper_App.entity;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,13 +18,12 @@ public class Users implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @NotNull
-    private int id;
+    private Long id;
 
     @Column(name = "first_name")
     @NotNull
     @Size(min = 5)
-    @Pattern(regexp = "[a-zA-Z]{5,20}", message = "Username must contain only letters ")
+    @Pattern(regexp = SuceessConstants.USERNAME_PATTERN, message = SuceessConstants.USERNAME_PATTERN_MESSAGE)
     private String firstName;
 
     @Column(name = "last_name")
@@ -38,14 +37,15 @@ public class Users implements UserDetails {
 
     @Column(name = "gender")
     @NotNull
-    @Pattern(regexp = "^(FEMALE|MALE)$", message = "Gender must be FEMALE or MALE")
+    @Pattern(regexp = SuceessConstants.GENDER_PATTERN, message = SuceessConstants.GENDER_PATTERN_MESSAGE)
     private String gender;
 
     @Column(name = "email")
     @NotNull
-    @Email(message = "please provide a valid email")
-    @NotEmpty(message = "Email cannot be empty")
+    @NotEmpty(message = SuceessConstants.EMAIL_NOT_EMPTY_MESSAGE)
+    @Pattern(regexp = SuceessConstants.EMAIL_PATTERN, message = SuceessConstants.EMAIL_PATTERN_MESSAGE)
     private String email;
+
 
     @Column(name = "password")
     @NotNull
@@ -146,24 +146,13 @@ public class Users implements UserDetails {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "Users{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", gender='" + gender + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
 
-    public int getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NotNull Long id) {
         this.id = id;
     }
 
@@ -205,5 +194,18 @@ public class Users implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender='" + gender + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

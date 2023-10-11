@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
-
 /**
  * Entity that stores the booking details
  * @Author pavithra
@@ -27,7 +25,7 @@ public class Bookings {
     private Users users;
 
     @Column(name="helper_id")
-    private int helperId;
+    private Long helperId;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "timeslot_id")
@@ -42,11 +40,11 @@ public class Bookings {
     }
 
 
-    public int getHelperId() {
+    public Long getHelperId() {
         return helperId;
     }
 
-    public void setHelperId(int helperId) {
+    public void setHelperId(Long helperId) {
         this.helperId = helperId;
     }
 

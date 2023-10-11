@@ -20,6 +20,8 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.ArrayList;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Arrays;
 import  java.util.Collection;
 import org.springframework.stereotype.Component;
 
@@ -67,7 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              }
              userRepository.findByEmail(username).orElseThrow(()->new Exception("Invalid token"));
              String[] roles=decodeJWT.getClaim("roles").asArray(String.class);
-            Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
+             boolean isAdmin = Arrays.stream(roles).anyMatch(role -> role.equals("Role_Admin"));
+
+             Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
              java.util.Arrays.stream(roles).forEach(role->
                      authorities.add(new SimpleGrantedAuthority(role)));
              UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(username,null,authorities);

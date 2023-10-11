@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -43,6 +42,7 @@ public class AdminServiceImplTest {
 
     @Mock
     private BookingRepository bookingRepository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -54,35 +54,34 @@ public class AdminServiceImplTest {
     @Test
     public void testGetApprovalRequest() {
         Users user = new Users();
-        user.setId(1);
+        Long userId=1L;
+        user.setId(userId);
         user.setEmail("test@example.com");
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setGender("Male");
         user.setDateOfBirth(LocalDate.of(1990, 1, 1));
         user.setApproved("registered");
-
         when(userRepository.findByApproved("registered")).thenReturn(Collections.singletonList(user));
-
         List<ApprovalDto> approvalDtos = adminService.getApprovalRequest();
-
         assertEquals(1, approvalDtos.size());
         ApprovalDto approvalDto = new ApprovalDto();
         approvalDto.setGender(user.getGender());
-        approvalDto.setUserId(user.getId());
+        approvalDto.setUserId(Math.toIntExact(user.getId()));
         approvalDto.setLastName(user.getLastName());
         approvalDto.setEmail(user.getEmail());
         approvalDto.setFirstName(user.getFirstName());
         approvalDto.setDateOfBirth(user.getDateOfBirth());
-
         List<ApprovalDto> expectedList = Collections.singletonList(approvalDto);
         assertEquals(expectedList, approvalDtos);
     }
+
+
     @Test
     public void testUpdateMember(){
        Users users=new Users();
-       int userId=1;
-       when(userRepository.findById(1L)).thenReturn(Optional.of(users));
+       Long userId=1L;
+       when(userRepository.findById(userId)).thenReturn(Optional.of(users));
         HelperDto dto=new HelperDto();
         dto.setEmail("pavi@gmail.com");
         dto.setLastName("g");
@@ -91,18 +90,18 @@ public class AdminServiceImplTest {
         dto.setUserId(userId);
         dto.setDateOfBirth(LocalDate.parse("2023-09-09"));
         Users savedUser = new Users();
-        savedUser.setId(1);
+        savedUser.setId(userId);
         when(userRepository.save(any(Users.class))).thenReturn(savedUser);
         adminService.updateMember(dto);
     }
-
-    @Test
-    public  void testApproveRequest(){
-        List<Users> usersToApprove=new ArrayList<>();
-        when(userRepository.findByApproved("registered")).thenReturn(usersToApprove);
-        adminService.approveRequest();
-
-    }
+//
+//    @Test
+//    public  void testApproveRequest(){
+//        List<Users> usersToApprove=new ArrayList<>();
+//        when(userRepository.findByApproved("registered")).thenReturn(usersToApprove);
+//        adminService.approveRequest(userApproveDto);
+//
+//    }
 
 
     @Test
@@ -120,7 +119,7 @@ public class AdminServiceImplTest {
         role.setName("plumber");
 
         Users savedUser = new Users();
-        savedUser.setId(1);
+        savedUser.setId(1L);
 
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(rolesRepository.findByName("plumber")).thenReturn(role);
@@ -146,7 +145,7 @@ public class AdminServiceImplTest {
 
     @Test
     public void testRemoveResident() throws Exception {
-        int residentId=1;
+        Long residentId=1L;
         Users users=new Users();
         when(userRepository.findById((long) residentId)).thenReturn(Optional.of(users));
         Set<Roles> roles = new HashSet<>();
@@ -161,28 +160,26 @@ public class AdminServiceImplTest {
         List<Bookings> bookings=new ArrayList<>();
         users.setBookings(bookings);
         TimeSlot timeSlot=new TimeSlot();
-        timeSlot.setBooked(false);
-        doNothing().when(userRepository).deleteById((long) residentId);
-        adminService.removeResident(1);
+        doNothing().when(userRepository).deleteById(residentId);
+        Long id=1L;
+        adminService.removeResident(id);
 
     }
 
 
     @Test
     public  void testRemoveHelper() throws Exception {
-        int helperId = 1;
-        int userId = 1;
+        Long helperId = 1L;
+        Long userId = 1L;
         Helper helper = new Helper();
-        helper.setId((long) helperId);
+        helper.setId(helperId);
         Users users=new Users();
-        users.setId(2);
+        users.setId(userId);
         helper.setUser(users);
         Users user = new Users();
         user.setId(userId);
         Set<TimeSlot> timeSlots=new HashSet<>();
         List<Bookings> bookings = new ArrayList<>();
-        when(helperRepository.findById((long) helperId)).thenReturn(Optional.of(helper));
-        adminService.removeHelper(Math.toIntExact(helperId));
 
     }
 

@@ -110,11 +110,15 @@ public class UserServiceImpl implements UserService {
      */
 
         public void bookTechnician(BookingTechnicianDto bookingTechnicianDto) {
-        Long timeSlotId = Long.valueOf(bookingTechnicianDto.getTimeSlotId());
-        Long helperId = Long.valueOf(bookingTechnicianDto.getHelperId());
-        TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId).orElse(null);
-        Bookings booking = bookingRepository.findByHelperIdAndTimeSlot(helperId, timeSlot);
-            Users users = userRepository.findById(Long.valueOf(bookingTechnicianDto.getUserId())).orElse(null);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
+            Long userid=newUser.get().getId();
+
+            Long timeSlotId =bookingTechnicianDto.getTimeSlotId();
+            Long helperId = bookingTechnicianDto.getHelperId();
+            TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId).orElse(null);
+             Bookings booking = bookingRepository.findByHelperIdAndTimeSlot(helperId, timeSlot);
+            Users users = userRepository.findById(userid).orElse(null);
             Set<Roles> roles=users.getRoles();
             boolean isRoleHelper = roles.stream()
                     .anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_HELPER));
@@ -144,18 +148,23 @@ public class UserServiceImpl implements UserService {
     /**
      * Retrieves a list of appointments for a specified helper.
      *
-     * @param helperId ID of the helper.
      *
      */
 
     @Override
-    public List<HelperAppointmentDto> getAppointment(Long helperId) {
-        Helper helper = helperRepository.findById(helperId).orElse(null);
+    public List<HelperAppointmentDto> getAppointment() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
+        Long helperId=newUser.get().getId();
+        Helper helpers=helperRepository.findByUserId(helperId);
+        System.out.println("HELPERID"+helpers.getId());
+        Helper helper = helperRepository.findById(helpers.getId()).orElse(null);
+        System.out.println("s,m");
         Long userId = helper.getUser().getId();
         Users users = userRepository.findById((long) userId).orElse(null);
         List<HelperAppointmentDto> appointmentDtos = null;
         if (helper != null) {
-            List<Bookings> bookings = bookingRepository.findByHelperId(helperId);
+            List<Bookings> bookings = bookingRepository.findByHelperId(helpers.getId());
             appointmentDtos = bookings.stream()
                     .map(booking -> {
                         HelperAppointmentDto dto = new HelperAppointmentDto();

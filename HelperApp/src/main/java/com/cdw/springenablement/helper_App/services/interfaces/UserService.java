@@ -14,7 +14,7 @@ import java.util.List;
 public  interface UserService {
     Long registerUser(UserDto userDto) ;
     void bookTechnician(BookingTechnicianDto bookingTechnicianDto) ;
-    List<HelperAppointmentDto> getAppointment(Long helperId);
+    List<HelperAppointmentDto> getAppointment();
     List<TimeSlotDto> getAvailableTechnicians() ;
     void updateHelperSpecialization(Long id, String specialisation) ;
 }

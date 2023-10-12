@@ -21,13 +21,12 @@ public class HelperController implements HelpersApi  {
 
   /**
    *
-   * @param helperId  (required)
    * @return the list of helper appointments
    */
 
   @Override
-  public ResponseEntity<List<HelperAppointmentDto>> getHelperAppointments(Long helperId) {
-    List<HelperAppointmentDto> helperAppointmentDtos=userService.getAppointment(helperId);
+  public ResponseEntity<List<HelperAppointmentDto>> getHelperAppointments() {
+    List<HelperAppointmentDto> helperAppointmentDtos=userService.getAppointment();
     return ResponseEntity.ok(helperAppointmentDtos);
   }
 

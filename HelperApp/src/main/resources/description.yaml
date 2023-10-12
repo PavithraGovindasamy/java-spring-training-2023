@@ -313,13 +313,6 @@ paths:
         - Helpers
       summary: Get appointments for a helper
       operationId: getHelperAppointments
-      parameters:
-        - name: helperId
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
       responses:
         '200':
           description: Appointments of helper
@@ -374,10 +367,6 @@ components:
     BookingTechnicianDto:
       type: object
       properties:
-        userId:
-          type: integer
-          format: int64
-          example: 1
         helperId:
           type: integer
           format: int64

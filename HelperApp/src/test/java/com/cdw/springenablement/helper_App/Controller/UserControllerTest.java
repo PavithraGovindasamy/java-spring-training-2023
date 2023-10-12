@@ -58,7 +58,6 @@ public class UserControllerTest {
         BookingTechnicianDto bookingTechnicianDto=new BookingTechnicianDto();
         bookingTechnicianDto.setEmail("pavo@gmail.com");
         bookingTechnicianDto.setGender("FEMALE");
-        bookingTechnicianDto.setUserId(1L);
         bookingTechnicianDto.setHelperId(2L);
         doNothing().when(userService).bookTechnician(bookingTechnicianDto);
         ApiResponseDto responseDto=new ApiResponseDto()

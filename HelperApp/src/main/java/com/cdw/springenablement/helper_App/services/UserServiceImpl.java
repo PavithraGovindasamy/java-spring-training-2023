@@ -11,12 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -236,6 +237,42 @@ public class UserServiceImpl implements UserService {
                 throw new HelperAppException(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR);
             }
         }
+    }
+
+    /**
+     * Returning the user booking details with appropraite helpers and timeslot info
+     * @return
+     */
+
+    @Override
+    public List<BookingDto> getUserBookings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
+        Long id=newUser.get().getId();
+        List<Bookings> bookingDtos=bookingRepository.findByUsers(newUser);
+
+        List<BookingDto> booking=bookingDtos.stream()
+
+                .map(bookings -> {
+                    BookingDto bookingDto=new BookingDto();
+                    Optional<Helper> helper=helperRepository.findById(bookings.getHelperId());
+                    bookingDto.setBookingId(bookings.getId());
+                    bookingDto.setHelperId(bookings.getHelperId());
+                    bookingDto.setSpecialisation(helper.get().getSpecialization());
+                    TimeSlot timeSlot = bookings.getTimeSlot();
+                    BookingDtoTimeslotDetails timeslotDetails=new BookingDtoTimeslotDetails();
+                    timeslotDetails.setStartTime(timeSlot.getStartTime().toString());
+                    timeslotDetails.setEndTime(timeSlot.getEndTime().toString());
+                    timeslotDetails.setDate(LocalDate.parse(timeSlot.getDate().toString()));
+
+                    bookingDto.setTimeslotDetails(timeslotDetails);
+                    return bookingDto;
+
+
+                })
+                .collect(Collectors.toList());
+
+        return booking;
     }
 
 }

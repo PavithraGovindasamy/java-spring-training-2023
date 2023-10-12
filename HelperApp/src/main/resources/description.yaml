@@ -143,6 +143,28 @@ paths:
       security:
         - bearerAuth: []
 
+  /residents/bookings:
+    get:
+      tags:
+        - Residents
+      summary: Get User bookings
+      operationId: getUserBookings
+      responses:
+        '200':
+          description: Successful response with a list of resident bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+
 
   /admin:
     put:
@@ -533,6 +555,29 @@ components:
           type: string
         userIDs:
           type: string
+
+    BookingDto:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+        helperId:
+          type: integer
+          format: int64
+        specialisation:
+          type: String
+        timeslotDetails:
+          type: object
+          properties:
+            startTime:
+              type: string
+            endTime:
+              type: string
+            date:
+              type: string
+              format: date
+
 
   securitySchemes:
     bearerAuth:

@@ -1,9 +1,6 @@
 package com.cdw.springenablement.helper_App.services.interfaces;
 
-import com.cdw.springenablement.helper_App.client.models.BookingTechnicianDto;
-import com.cdw.springenablement.helper_App.client.models.HelperAppointmentDto;
-import com.cdw.springenablement.helper_App.client.models.TimeSlotDto;
-import com.cdw.springenablement.helper_App.client.models.UserDto;
+import com.cdw.springenablement.helper_App.client.models.*;
 
 import java.util.List;
 
@@ -17,4 +14,6 @@ public  interface UserService {
     List<HelperAppointmentDto> getAppointment();
     List<TimeSlotDto> getAvailableTechnicians() ;
     void updateHelperSpecialization(Long id, String specialisation) ;
+
+    List<BookingDto> getUserBookings();
 }

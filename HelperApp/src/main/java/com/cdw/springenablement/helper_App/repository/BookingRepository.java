@@ -6,6 +6,8 @@ import com.cdw.springenablement.helper_App.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
+
 /**
  * Repository which handles booking related operation
  */
@@ -20,4 +22,5 @@ public interface BookingRepository extends JpaRepository<Bookings, Long> {
 
     List<Bookings> findByTimeSlotId(Long id);
 
+    List<Bookings> findByUsers(Optional<Users> newUser);
 }

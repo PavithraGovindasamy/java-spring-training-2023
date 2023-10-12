@@ -2,6 +2,7 @@ package com.cdw.springenablement.helper_App.controller;
 import com.cdw.springenablement.helper_App.client.api.ResidentsApi;
 import com.cdw.springenablement.helper_App.client.models.*;
 import com.cdw.springenablement.helper_App.constants.SuceessConstants;
+import com.cdw.springenablement.helper_App.entity.Bookings;
 import com.cdw.springenablement.helper_App.services.interfaces.UserService;
 import com.cdw.springenablement.helper_App.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,16 @@ public class UserController implements ResidentsApi {
         userService.bookTechnician(bookingTechnicianDto);
         String successMessage = SuceessConstants.BOOKED_SUCCESSFULLY_MESSAGE;
         return ResponseUtil.generateSuccessResponse(successMessage);
-
     }
 
+    /**
+     *
+     * @return the user bookings
+     */
+    @Override
+    public ResponseEntity<List<BookingDto>> getUserBookings() {
+            List<BookingDto> bookings=userService.getUserBookings();
+            return  ResponseEntity.ok(bookings);
 
+    }
 }

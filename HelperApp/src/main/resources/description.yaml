@@ -169,30 +169,6 @@ paths:
       security:
         - bearerAuth: []
 
-    post:
-      tags:
-        - Admin
-      summary: Add a new member
-      operationId: addNewMember
-      requestBody:
-        description: Adding a new resident
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserDto'
-      responses:
-        '200':
-          description: Member added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseDto'
-        '401':
-          description: Unauthorized access
-      security:
-        - bearerAuth: []
-
 
   /admin/remove-resident/{residentId}:
     delete:

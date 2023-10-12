@@ -22,8 +22,6 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application.properties")
 @Service
 public class JwtService {
-
-
     private String secretKey="123";
 
     @Autowired
@@ -42,7 +40,6 @@ public class JwtService {
              .withExpiresAt(new java.util.Date(System.currentTimeMillis() + SuceessConstants.TIME_LIMIT))
              .withClaim("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
              .sign(algorithm);
-
      }
 
 }

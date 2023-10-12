@@ -1,15 +1,18 @@
 package com.cdw.springenablement.helper_App.Controller;
 
 import com.cdw.springenablement.helper_App.client.models.*;
+import com.cdw.springenablement.helper_App.constants.ErrorConstants;
 import com.cdw.springenablement.helper_App.constants.SuceessConstants;
 import com.cdw.springenablement.helper_App.controller.AuthController;
 import com.cdw.springenablement.helper_App.services.AuthenticationService;
 import com.cdw.springenablement.helper_App.services.TokenBlacklistService;
 import com.cdw.springenablement.helper_App.services.interfaces.UserService;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,13 @@ public class AuthControllerTest {
     @Mock
     private TokenBlacklistService tokenBlacklistService;
 
+    @BeforeEach
+        public void setUp() {
+            MockitoAnnotations.openMocks(this);
+    }
+
+
+
     @Test
     public void testRegisterUser() {
         UserDto userDto = new UserDto();
@@ -54,7 +64,7 @@ public class AuthControllerTest {
         ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponseDto responseBody = response.getBody();
-        assertEquals("Specialisation is required for helpers.", responseBody.getMessage());
+        assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
     }
 
 

@@ -15,10 +15,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalTime;
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,6 +60,13 @@ public class UserServiceImplTest {
 
     @Test
     public void testRegisterUser_Success() throws Exception {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken("example",null);
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        Users user=new Users();
+        user.setEmail("test");
+        when(userRepository.findByEmail(authentication.getName())).thenReturn(Optional.of(user));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         UserDto userDto = new UserDto();
         userDto.setEmail("test@example.com");
         userDto.setPassword("test123");
@@ -83,7 +92,6 @@ public class UserServiceImplTest {
         userDto.setEmail("test@example.com");
         Users existingUser = new Users();
         existingUser.setEmail(userDto.getEmail());
-        when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.of(existingUser));
         userService.registerUser(userDto);
     }
 

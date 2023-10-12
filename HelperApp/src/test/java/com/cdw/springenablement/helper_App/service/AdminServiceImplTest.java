@@ -34,6 +34,7 @@ public class AdminServiceImplTest {
 
     @Mock
     private RolesRepository rolesRepository;
+
     @Mock
     private TimeSlotRepository timeSlotRepository;
 
@@ -94,53 +95,7 @@ public class AdminServiceImplTest {
         when(userRepository.save(any(Users.class))).thenReturn(savedUser);
         adminService.updateMember(dto);
     }
-//
-//    @Test
-//    public  void testApproveRequest(){
-//        List<Users> usersToApprove=new ArrayList<>();
-//        when(userRepository.findByApproved("registered")).thenReturn(usersToApprove);
-//        adminService.approveRequest(userApproveDto);
-//
-//    }
 
-
-    @Test
-    public void testAddNewMember_Success() throws Exception {
-
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test@example.com");
-        userDto.setGender("Gender");
-        userDto.setFirstName("test");
-        userDto.setLastName("g");
-        userDto.setDateOfBirth(LocalDate.parse("2023-09-02"));
-        userDto.setRole(Arrays.asList("plumber"));
-
-        Roles role = new Roles();
-        role.setName("plumber");
-
-        Users savedUser = new Users();
-        savedUser.setId(1L);
-
-        when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.empty());
-        when(rolesRepository.findByName("plumber")).thenReturn(role);
-        when(userRepository.save(any(Users.class))).thenReturn(savedUser);
-
-        adminService.addNewMember(userDto);
-
-
-    }
-
-    @Test(expected = Exception.class)
-    public void testAddMember_UserExists() throws Exception {
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test@example.com");
-
-        Users existingUser = new Users();
-        existingUser.setEmail(userDto.getEmail());
-
-        when(userRepository.findByEmail(userDto.getEmail())).thenReturn(Optional.of(existingUser));
-        adminService.addNewMember(userDto);
-    }
 
 
     @Test

@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -28,7 +31,9 @@ public class AdminServiceImpl  implements AdminService {
 
     @Autowired
     private UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     @Autowired
     private RolesRepository rolesRepository;
 
@@ -104,38 +109,6 @@ public class AdminServiceImpl  implements AdminService {
 
     /**
      *
-     * @param userDto
-     * Method that adds the member
-     */
-    @Override
-    public void addNewMember(UserDto userDto) {
-
-        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            try {
-                String message= ErrorConstants.USER_ALREADY_EXISTS_ERROR;
-                throw new HelperAppException(message);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Users user = new Users();
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setGender(userDto.getGender());
-        user.setDateOfBirth(userDto.getDateOfBirth());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setApproved(SuceessConstants.STATUS_APPROVED);
-        List<String> roleNames = userDto.getRole();
-        Set<Roles> userRoles = roleNames.stream()
-                .map(roleName -> rolesRepository.findByName(roleName))
-                .collect(Collectors.toSet());
-        user.setRoles(userRoles);
-        userRepository.save(user);
-    }
-
-    /**
-     *
      * @param residentId
      * Method that remove the resident
      */
@@ -170,7 +143,7 @@ public class AdminServiceImpl  implements AdminService {
     @Override
     public void removeHelper(Long helperId)  {
         Helper helper = helperRepository.findById(helperId).orElse(null);
-        if (helper != null) {
+        if (helper == null) {
             String message= ErrorConstants.HELPER_NOT_FOUND_ERROR;
             throw new HelperAppException(message);
         }

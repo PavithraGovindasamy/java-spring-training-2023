@@ -120,19 +120,7 @@ public class AdminControllerTest {
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
     }
 
-    @Test
-    public void testAddNewMember() throws Exception {
-        UserDto dto=new UserDto();
-        dto.setEmail("test@gmail.com");
-        doNothing().when(adminService).addNewMember(dto);
-        ResponseEntity<ApiResponseDto> responseEntity = adminController.addNewMember(dto);
-        ApiResponseDto expectedResponse = new ApiResponseDto()
-                .message(SuceessConstants.MEMBER_ADDED_SUCCESSFULLY_MESSAGE);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
-
-    }
 
 
 

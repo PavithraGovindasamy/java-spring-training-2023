@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,12 +59,20 @@ public class UserServiceImpl implements UserService {
      * @param userDto
      * @return ID of the registered user.
      */
-    public Long registerUser(UserDto userDto)  {
+    public Long registerUser(UserDto userDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
+        boolean isRoleAdmin = false;
+        if (newUser.isPresent()) {
+            Set<Roles> roles = newUser.get().getRoles();
+            isRoleAdmin = roles.stream()
+                    .anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_ADMIN));
+        }
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new HelperAppException(ErrorConstants.USER_ALREADY_EXISTS_ERROR);
         }
         List<String> roleNames = userDto.getRole();
-        Set<Roles> userRoles=new HashSet<>();
+        Set<Roles> userRoles = new HashSet<>();
         for (String roleName : roleNames) {
             if (!roleName.equals(SuceessConstants.ROLE_ADMIN)) {
                 Roles role = rolesRepository.findByName(roleName);
@@ -69,8 +80,7 @@ public class UserServiceImpl implements UserService {
                     throw new HelperAppException(ErrorConstants.INVALID_ROLE_ERROR + roleName);
                 }
                 userRoles.add(role);
-            }
-            else {
+            } else {
                 throw new HelperAppException(ErrorConstants.CANNOT_REGISTER_ADMIN_ERROR);
             }
         }
@@ -82,9 +92,12 @@ public class UserServiceImpl implements UserService {
         user.setDateOfBirth(userDto.getDateOfBirth());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setApproved(registered);
+        if (isRoleAdmin) {
+            user.setApproved(approved);
+        } else {
+            user.setApproved(registered);
+        }
         user.setRoles(userRoles);
-
         Users savedUser = userRepository.save(user);
         return savedUser.getId();
     }
@@ -215,7 +228,6 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
 
 }
 

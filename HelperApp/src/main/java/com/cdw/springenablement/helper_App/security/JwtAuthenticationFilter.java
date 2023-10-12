@@ -69,11 +69,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              }
              userRepository.findByEmail(username).orElseThrow(()->new Exception("Invalid token"));
              String[] roles=decodeJWT.getClaim("roles").asArray(String.class);
-             boolean isAdmin = Arrays.stream(roles).anyMatch(role -> role.equals("Role_Admin"));
 
              Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
+
              java.util.Arrays.stream(roles).forEach(role->
                      authorities.add(new SimpleGrantedAuthority(role)));
+
              UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(username,null,authorities);
              SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
              filterChain.doFilter(request,response);

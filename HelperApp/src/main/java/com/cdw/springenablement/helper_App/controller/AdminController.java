@@ -57,24 +57,9 @@ public class AdminController implements AdminApi {
         adminService.rejectRequest(rejectRequestRequest);
         String successMessage = SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE;
         System.out.println("njsn"+"gh"+ successMessage);
-
         return ResponseUtil.generateSuccessResponse(successMessage);
     }
 
-
-
-    /**
-     * Adds a new member to the system.
-     *
-     * @param userDto
-     * @return  the result of the addition operation.
-     */
-    @Override
-    public ResponseEntity<ApiResponseDto> addNewMember(UserDto userDto) {
-        adminService.addNewMember(userDto);
-        String successMessage = SuceessConstants.MEMBER_ADDED_SUCCESSFULLY_MESSAGE;
-        return ResponseUtil.generateSuccessResponse(successMessage);
-    }
 
     /**
      * Removes a resident from the system.

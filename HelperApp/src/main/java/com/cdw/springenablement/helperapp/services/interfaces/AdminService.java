@@ -12,7 +12,7 @@ public interface AdminService {
     void removeResident(Long residentId) ;
     void removeHelper(Long helperId) ;
     void updateMember(HelperDto helperDto);
-    void approveRequest(ApproveRequestRequest userApproveDto);
-    void rejectRequest(RejectRequestRequest rejectRequestRequest);
+    List<Long> approveRequest(ApproveRequestRequest userApproveDto);
+    List<Long> rejectRequest(RejectRequestRequest rejectRequestRequest);
 
 }

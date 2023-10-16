@@ -9,18 +9,15 @@ import com.cdw.springenablement.helperapp.exception.HelperAppException;
 import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -29,15 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @Author pavithra
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+
     @Autowired
     private RolesRepository rolesRepository;
 
@@ -63,6 +57,7 @@ public class UserServiceImpl implements UserService {
      * @return ID of the registered user.
      */
     public Long registerUser(UserDto userDto) {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
         boolean isRoleAdmin = false;
@@ -128,11 +123,16 @@ public class UserServiceImpl implements UserService {
             throw new HelperAppException(ErrorConstants.CANNOT_BOOK_NON_RESIDENT_ERROR);
         }
         Helper helper = helperRepository.findById(helperId).orElse(null);
+        if (helper == null) {
+            throw new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR);
+        }
         Long userId = helper.getUser().getId();
         Users helperUser = userRepository.findById((long) userId).orElse(null);
+
         Set<Roles> helperRole = helperUser.getRoles();
-        if (helperUser == null) {
-            throw new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR);
+
+        if(timeSlot==null){
+            throw  new HelperAppException("No such timeslot exists");
         }
         if (booking != null) {
             throw new HelperAppException(ErrorConstants.HELPER_ALREADY_BOOKED_ERROR);
@@ -146,38 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /**
-     * Retrieves a list of appointments for a specified helper.
-     */
 
-    @Override
-    public List<HelperAppointmentDto> getAppointment() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
-        Long helperId = newUser.get().getId();
-        Helper helpers = helperRepository.findByUserId(helperId);
-        Helper helper = helperRepository.findById(helpers.getId()).orElse(null);
-        System.out.println("s,m");
-        Long userId = helper.getUser().getId();
-        Users users = userRepository.findById((long) userId).orElse(null);
-        List<HelperAppointmentDto> appointmentDtos = null;
-        if (helper != null) {
-            List<Bookings> bookings = bookingRepository.findByHelperId(helpers.getId());
-            appointmentDtos = bookings.stream()
-                    .map(booking -> {
-                        HelperAppointmentDto dto = new HelperAppointmentDto();
-                        dto.setAppointmentId(booking.getId());
-                        dto.setStartTime(String.valueOf(booking.getTimeSlot().getStartTime()));
-                        dto.setEndTime(String.valueOf(booking.getTimeSlot().getEndTime()));
-                        dto.setCustomerName(booking.getUsers().getFirstName() + " " + booking.getUsers().getLastName());
-                        dto.setCustomerEmail(booking.getUsers().getEmail());
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-
-        }
-        return appointmentDtos;
-    }
 
     /**
      * Retrieves available technicians for a user
@@ -198,11 +167,27 @@ public class UserServiceImpl implements UserService {
                             helperRepository.findAll() :
                             helperRepository.findByIdNotIn(bookedHelperIds);
 
-                    return TimeSlotDtoDisplay.createTimeSlotDto(slot.getId(), slot.getStartTime(), slot.getEndTime(), slot.getDate(), availableHelpers);
+                    availableHelpers = availableHelpers.stream()
+                            .filter(helper -> userRepository.findById(helper.getUser().getId())
+                                    .map(user -> SuceessConstants.STATUS_APPROVED.equals(user.getApproved()))
+                                    .orElse(false))
+                            .collect(Collectors.toList());
+
+                    if (!availableHelpers.isEmpty()) {
+                        return TimeSlotDtoDisplay.createTimeSlotDto(slot.getId(), slot.getStartTime(), slot.getEndTime(), slot.getDate(), availableHelpers);
+                    } else {
+                        return null;
+                    }
                 })
+                .filter(slotDto -> slotDto != null)
                 .collect(Collectors.toList());
+        if(availableSlotsDtoList.isEmpty())
+        {
+            throw new HelperAppException("No Helpers available currently");
+        }
         return availableSlotsDtoList;
     }
+
 
 
     /**
@@ -248,6 +233,10 @@ public class UserServiceImpl implements UserService {
         Long id = newUser.get().getId();
         List<Bookings> bookingDtos = bookingRepository.findByUsers(newUser);
 
+        if (bookingDtos.isEmpty()) {
+            throw new HelperAppException("No bookings found for the user.");
+        }
+
         List<BookingDto> booking = bookingDtos.stream()
 
                 .map(bookings -> {
@@ -271,6 +260,7 @@ public class UserServiceImpl implements UserService {
 
         return booking;
     }
+
 
 }
 

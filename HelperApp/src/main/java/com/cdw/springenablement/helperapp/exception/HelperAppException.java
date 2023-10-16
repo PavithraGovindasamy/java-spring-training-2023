@@ -1,6 +1,6 @@
 package com.cdw.springenablement.helperapp.exception;
-import org.springframework.http.HttpStatus;
 
+import org.springframework.http.HttpStatus;
 
 public class HelperAppException extends RuntimeException {
     private final HttpStatus httpStatus;
@@ -13,7 +13,6 @@ public class HelperAppException extends RuntimeException {
         super(message);
         this.httpStatus = httpStatus;
     }
-
 
     public HttpStatus getHttpStatus() {
         return httpStatus;

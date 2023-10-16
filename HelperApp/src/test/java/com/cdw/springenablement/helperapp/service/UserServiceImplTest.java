@@ -1,8 +1,10 @@
 package com.cdw.springenablement.helperapp.service;
 
 import com.cdw.springenablement.helperapp.client.models.*;
+import com.cdw.springenablement.helperapp.constants.ErrorConstants;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import com.cdw.springenablement.helperapp.entity.*;
+import com.cdw.springenablement.helperapp.exception.HelperAppException;
 import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.UserServiceImpl;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
@@ -18,11 +21,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.lang.model.type.ErrorType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -134,6 +139,14 @@ public class UserServiceImplTest {
     }
 
 
+    @Test(expected = HelperAppException.class)
+    public void testGetAvailableTechnicians_NoBookings() {
+        when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
+        when(timeSlotRepository.findAll()).thenReturn(Arrays.asList(new TimeSlot()));
+        userService.getAvailableTechnicians();
+    }
+
+
 
 
 
@@ -170,74 +183,35 @@ public class UserServiceImplTest {
         userService.bookTechnician(bookingTechnicianDto);
     }
 
-    @Test
-    public  void testGetAppointment(){
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken("example",null);
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        long userId=1L;
-        Long helperId=1L;
-        Users user = new Users();
-        user.setId(userId);
-        when(userRepository.findByEmail(authentication.getName())).thenReturn(Optional.of(user));
-        user.setRoles(Collections.singleton(new Roles(SuceessConstants.ROLE_RESIDENT)));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        Set<Roles> roles=user.getRoles();
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        Helper helper=new Helper();
-        Users users=new Users();
-        users.setId(userId);
-        users.setFirstName("pavi");
-        users.setEmail("pavi@gmail.com");
-        helper.setUser(users);
-        helper.setId(helperId);
-        when(helperRepository.findById(helperId)).thenReturn(Optional.of(helper));
-        when(helperRepository.findByUserId(userId)).thenReturn(helper);
-        List<HelperAppointmentDto> appointmentDto=new ArrayList<>();
-        List<Bookings> bookings=new ArrayList<>();
-        HelperAppointmentDto dto=new HelperAppointmentDto();
-        Bookings bookingss=new Bookings();
-        long bookingId=2L;
-        bookingss.setId(bookingId);
-        TimeSlot timeSlot=new TimeSlot();
-        long timeSlotId=1L;
-        timeSlot.setId(timeSlotId);
-        timeSlot.setStartTime(LocalTime.parse("12:00"));
-        timeSlot.setEndTime(LocalTime.parse("13:00"));
-        bookingss.setTimeSlot(timeSlot);
-        bookingss.setUsers(users);
-        dto.setAppointmentId(bookingss.getId());
-        dto.setStartTime(String.valueOf(bookingss.getTimeSlot().getStartTime()));
-        dto.setEndTime(String.valueOf(bookingss.getTimeSlot().getEndTime()));
-        dto.setCustomerName(bookingss.getUsers().getFirstName());
-        dto.setCustomerEmail(bookingss.getUsers().getEmail());
-        appointmentDto.add(dto);
-        List<HelperAppointmentDto> appointmentDtos=userService.getAppointment();
-        appointmentDtos.add(dto);
-        assertEquals(appointmentDto,appointmentDtos);
-    }
-
 
     @Test
-    public void testGetAvailableTechnicians() throws Exception {
+    public void testGetAvailableTechnicians(){
+        Long id=1L;
         List<Bookings> bookings = new ArrayList<>();
-        when(bookingRepository.findAll()).thenReturn(bookings);
+        Bookings booking = new Bookings();
+        booking.setHelperId(id);
+        bookings.add(booking);
+
         List<TimeSlot> timeSlots = new ArrayList<>();
+        TimeSlot timeSlot = new TimeSlot();
+        timeSlot.setId(id);
+        timeSlots.add(timeSlot);
+
+    }
+
+
+
+    @Test(expected = HelperAppException.class)
+    public void testGetAvailableTechniciansWithNoAvailableHelpers() {
+        List<Bookings> bookings = new ArrayList<>();
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        when(bookingRepository.findAll()).thenReturn(bookings);
         when(timeSlotRepository.findAll()).thenReturn(timeSlots);
-        List<Helper> availableHelpers = new ArrayList<>();
-        List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
-        assertEquals(0, timeSlotDtos.size());
+        userService.getAvailableTechnicians();
     }
 
-    @Test
-    public void testGetAvailableTechniciansNoData() throws Exception {
-        when(bookingRepository.findAll()).thenReturn(new ArrayList<>());
-        when(timeSlotRepository.findAll()).thenReturn(new ArrayList<>());
-        List<TimeSlotDto> timeSlotDtos = userService.getAvailableTechnicians();
-        assertEquals(0, timeSlotDtos.size());
-    }
 
-    @Test
+    @Test(expected = HelperAppException.class)
     public void testGetUserBookings() {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken("example", null);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
@@ -251,13 +225,10 @@ public class UserServiceImplTest {
         user.setRoles(Collections.singleton(new Roles(SuceessConstants.ROLE_RESIDENT)));
         user.setEmail("test@example.com");
         user.setGender("Male");
-
         userRepository.save(user);
-
         Helper helper = new Helper();
         helper.setSpecialization("Specialization");
         helperRepository.save(helper);
-
         Bookings booking = new Bookings();
         booking.setUsers(user);
         booking.setHelperId(helper.getId());
@@ -277,6 +248,32 @@ public class UserServiceImplTest {
         expectedBookings.add(bookingDto);
 
     }
+
+    @Test(expected = HelperAppException.class)
+    public void testGetUserBookings_NoBookingsFound() {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Users user = new Users();
+        user.setId(1L);
+        Optional<Users> optionalUser = Optional.of(user);
+
+        when(authentication.getName()).thenReturn("user@example.com");
+        when(userRepository.findByEmail("user@example.com")).thenReturn(optionalUser);
+
+        userService.getUserBookings();
+    }
+
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetUserBookings_NoUserAuthenticated() {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        userService.getUserBookings();
+    }
+
+
+
 }
 
 

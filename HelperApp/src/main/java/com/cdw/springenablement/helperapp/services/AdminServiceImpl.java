@@ -7,9 +7,7 @@ import com.cdw.springenablement.helperapp.entity.*;
 import com.cdw.springenablement.helperapp.exception.HelperAppException;
 import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.interfaces.AdminService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,9 +22,7 @@ import java.util.stream.Collectors;
  * @Author pavithra
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
@@ -52,26 +48,33 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public List<ApprovalDto> getApprovalRequest() {
-        List<Users> usersToApprove = userRepository.findByApproved(SuceessConstants.STATUS_REGISTERED);
-        List<ApprovalDto> approvalDtos = usersToApprove.stream().map(user -> {
-            ApprovalDto approvalDto = new ApprovalDto();
-            approvalDto.setUserId(Math.toIntExact(user.getId()));
-            approvalDto.setEmail(user.getEmail());
-            approvalDto.setGender(user.getGender());
-            approvalDto.setFirstName(user.getFirstName());
-            approvalDto.setLastName(user.getLastName());
-            approvalDto.setDateOfBirth(user.getDateOfBirth());
-            return approvalDto;
-        }).collect(Collectors.toList());
-        return approvalDtos;
+            List<Users> usersToApprove = userRepository.findByApproved(SuceessConstants.STATUS_REGISTERED);
+            List<ApprovalDto> approvalDtos = usersToApprove.stream().map(user -> {
+                ApprovalDto approvalDto = new ApprovalDto();
+                approvalDto.setUserId(Math.toIntExact(user.getId()));
+                approvalDto.setEmail(user.getEmail());
+                approvalDto.setGender(user.getGender());
+                approvalDto.setFirstName(user.getFirstName());
+                approvalDto.setLastName(user.getLastName());
+                approvalDto.setDateOfBirth(user.getDateOfBirth());
+                return approvalDto;
+            }).collect(Collectors.toList());
+            if (approvalDtos.isEmpty()) {
+                throw new HelperAppException("No Approval request");
+            }
+            return approvalDtos;
+
+
     }
 
 
     /**
      * Method thqt gets the approved requests
+     *
+     * @return
      */
-    public void approveRequest(ApproveRequestRequest userApproveDto) {
-        System.out.println("userAPPROVE" + userApproveDto);
+    public List<Long> approveRequest(ApproveRequestRequest userApproveDto) {
+
         List<Long> approvedIds = userApproveDto.getApprovalIds();
         List<Users> usersToApprove = userRepository.findByIdInAndApproved(approvedIds, SuceessConstants.STATUS_REGISTERED);
         if (usersToApprove.isEmpty()) {
@@ -79,10 +82,11 @@ public class AdminServiceImpl implements AdminService {
         }
         usersToApprove.forEach(user -> user.setApproved(SuceessConstants.STATUS_APPROVED));
         userRepository.saveAll(usersToApprove);
+        return approvedIds;
     }
 
     @Override
-    public void rejectRequest(RejectRequestRequest rejectRequestRequest) {
+    public List<Long> rejectRequest(RejectRequestRequest rejectRequestRequest) {
         List<Long> rejectedIds = rejectRequestRequest.getRejectedIds();
         List<Users> usersToReject = userRepository.findByIdInAndApproved(rejectedIds, SuceessConstants.STATUS_REGISTERED);
         if (usersToReject.isEmpty()) {
@@ -90,6 +94,7 @@ public class AdminServiceImpl implements AdminService {
         }
         usersToReject.forEach(user -> user.setApproved(SuceessConstants.STATUS_REJECTED));
         userRepository.saveAll(usersToReject);
+        return rejectedIds;
 
     }
 
@@ -111,12 +116,10 @@ public class AdminServiceImpl implements AdminService {
             if (isResident) {
                 userRepository.deleteById(Long.valueOf(residentId));
             } else {
-                String message = ErrorConstants.DELETE_NON_RESIDENT_ERROR;
-                throw new HelperAppException(message);
+                throw new HelperAppException(ErrorConstants.DELETE_NON_RESIDENT_ERROR);
             }
         } else {
-            String message = ErrorConstants.USER_NOT_FOUND_ERROR;
-            throw new HelperAppException(message);
+            throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
         }
     }
 
@@ -127,8 +130,7 @@ public class AdminServiceImpl implements AdminService {
     public void removeHelper(Long helperId) {
         Helper helper = helperRepository.findById(helperId).orElse(null);
         if (helper == null) {
-            String message = ErrorConstants.HELPER_NOT_FOUND_ERROR;
-            throw new HelperAppException(message);
+            throw new HelperAppException(ErrorConstants.HELPER_NOT_FOUND_ERROR);
         }
         Long userId = helper.getUser().getId();
         Users user = userRepository.findById(userId).orElse(null);
@@ -147,6 +149,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateMember(HelperDto helperDto) {
         Users users = userRepository.findById(Long.valueOf(helperDto.getUserId())).orElse(null);
+        if(users==null){
+            throw new HelperAppException("No users found ");
+        }
         users.setEmail(helperDto.getEmail());
         users.setGender(helperDto.getGender());
         users.setDateOfBirth(helperDto.getDateOfBirth());

@@ -3,6 +3,7 @@ package com.cdw.springenablement.helperapp.controller;
 
 import com.cdw.springenablement.helperapp.client.api.HelpersApi;
 import com.cdw.springenablement.helperapp.client.models.HelperAppointmentDto;
+import com.cdw.springenablement.helperapp.services.interfaces.HelperService;
 import com.cdw.springenablement.helperapp.services.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.List;
 public class HelperController implements HelpersApi  {
 
   @Autowired
-  private UserService userService;
+  private HelperService helperService;
 
   /**
    *
@@ -26,7 +27,7 @@ public class HelperController implements HelpersApi  {
 
   @Override
   public ResponseEntity<List<HelperAppointmentDto>> getHelperAppointments() {
-    List<HelperAppointmentDto> helperAppointmentDtos=userService.getAppointment();
+    List<HelperAppointmentDto> helperAppointmentDtos=helperService.getAppointment();
     return ResponseEntity.ok(helperAppointmentDtos);
   }
 

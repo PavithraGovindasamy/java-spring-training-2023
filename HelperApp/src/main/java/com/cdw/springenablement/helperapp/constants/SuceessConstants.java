@@ -31,18 +31,18 @@ public class SuceessConstants {
 
     public static final String ROLE_RESIDENT = "Role_Resident";
 
-    public static final String GENDER_PATTERN = "^(FEMALE|MALE)$";
+    public static final String GENDER_PATTERN = "^(FEMALE|MALE|Female|Male|female|male)$";
     public static final String GENDER_PATTERN_MESSAGE = "Gender must be FEMALE or MALE";
-
-    public static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@(.+)$";
+    public static final String EMAIL_PATTERN =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     public static final String EMAIL_PATTERN_MESSAGE = "Please provide a valid email";
     public static final String EMAIL_NOT_EMPTY_MESSAGE = "Email cannot be empty";
-    public static final String USERNAME_PATTERN_MESSAGE = "Username must contain only letters ";
-    public static final String USERNAME_PATTERN = "[a-zA-Z]{3,20}";
+    public static final String USERNAME_PATTERN_MESSAGE = "It must contain only letters ";
+    public static final String USERNAME_PATTERN = "[a-zA-Z]+";
 
 
     public static final long TIME_LIMIT = 3 * 60 * 60 * 1000;
-    ;
 
 
 }

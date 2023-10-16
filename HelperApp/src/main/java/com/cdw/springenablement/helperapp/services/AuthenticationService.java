@@ -56,7 +56,6 @@ public class AuthenticationService {
             } else {
                 Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                System.out.println("roles" + user.getRoles());
                 user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
                 String jwtAccessToken = jwtService.generateToken(user, authorities);
                 authenticationResponse.setEmail(user.getEmail());

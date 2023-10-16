@@ -2,6 +2,7 @@ package com.cdw.springenablement.helperapp.Controller;
 
 import com.cdw.springenablement.helperapp.client.models.HelperAppointmentDto;
 import com.cdw.springenablement.helperapp.controller.HelperController;
+import com.cdw.springenablement.helperapp.services.interfaces.HelperService;
 import com.cdw.springenablement.helperapp.services.interfaces.UserService;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ public class HelperControllerTest {
     private HelperController helperController;
 
     @Mock
-    private UserService userService;
+    private HelperService helperService;
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +40,7 @@ public class HelperControllerTest {
     public void testGetHelperAppointments(){
         Long helperId=1L;
         List<HelperAppointmentDto> appointmentDtos=new ArrayList<>();
-        when(userService.getAppointment()).thenReturn(appointmentDtos);
+        when(helperService.getAppointment()).thenReturn(appointmentDtos);
         ResponseEntity<List<HelperAppointmentDto>> helperAppointmentDtos= helperController.getHelperAppointments();
         assertEquals(appointmentDtos,helperAppointmentDtos.getBody());
 

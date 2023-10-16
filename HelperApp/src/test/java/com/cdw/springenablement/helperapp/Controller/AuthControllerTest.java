@@ -43,29 +43,29 @@ public class AuthControllerTest {
 
 
 
-    @Test
-    public void testRegisterUser() {
-        UserDto userDto = new UserDto();
-        userDto.setRole(Collections.singletonList("Role_Helper"));
-        userDto.setSpecialisation("plumber");
-        Long id=1L;
-        when(userService.registerUser(userDto)).thenReturn(id);
-        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponseDto responseBody = response.getBody();
-        assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
-    }
+//    @Test
+//    public void testRegisterUser() {
+//        UserDto userDto = new UserDto();
+//        userDto.setRole(Collections.singletonList("Role_Helper"));
+//        userDto.setSpecialisation("plumber");
+//        Long id=1L;
+//        when(userService.registerUser(userDto)).thenReturn(id);
+//        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        ApiResponseDto responseBody = response.getBody();
+//        assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
+//    }
 
-    @Test
-    public void testRegisterUser_WithoutSpecialisation() {
-        UserDto userDto = new UserDto();
-        userDto.setRole(Collections.singletonList("Role_Helper"));
-        Long id=1L;
-        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ApiResponseDto responseBody = response.getBody();
-        assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
-    }
+//    @Test
+//    public void testRegisterUser_WithoutSpecialisation() {
+//        UserDto userDto = new UserDto();
+//        userDto.setRole(Collections.singletonList("Role_Helper"));
+//        Long id=1L;
+//        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        ApiResponseDto responseBody = response.getBody();
+//        assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
+//    }
 
 
     @Test

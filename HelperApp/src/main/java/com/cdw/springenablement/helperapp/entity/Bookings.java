@@ -1,6 +1,9 @@
 package com.cdw.springenablement.helperapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,11 +27,12 @@ public class Bookings {
     @JoinColumn(name = "user_id")
     private Users users;
 
-    @Column(name="helper_id")
+    @Column(name = "helper_id")
     private Long helperId;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "timeslot_id")
+    @NotNull(message = "TimeSlot ID cannot be null")
     private TimeSlot timeSlot;
 
     public Long getId() {

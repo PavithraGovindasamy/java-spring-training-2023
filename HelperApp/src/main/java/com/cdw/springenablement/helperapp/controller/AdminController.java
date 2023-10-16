@@ -39,8 +39,8 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<ApiResponseDto> approveRequest(ApproveRequestRequest approveRequestRequest) {
-        adminService.approveRequest(approveRequestRequest);
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.APPROVED_SUCCESSFULLY_MESSAGE);
+        List<Long> approvedUserIds = adminService.approveRequest(approveRequestRequest);
+        return ResponseUtil.generateSuccessResponse(SuceessConstants.APPROVED_SUCCESSFULLY_MESSAGE,approvedUserIds);
     }
 
     /**
@@ -52,8 +52,8 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<ApiResponseDto> rejectRequest(RejectRequestRequest rejectRequestRequest) {
-        adminService.rejectRequest(rejectRequestRequest);
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE);
+        List<Long> rejectedIds=adminService.rejectRequest(rejectRequestRequest);
+        return ResponseUtil.generateSuccessResponse(SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE,rejectedIds);
     }
 
 

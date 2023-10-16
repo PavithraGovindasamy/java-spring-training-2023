@@ -60,6 +60,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -218,13 +224,13 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/description.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/helperApp.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<supportingFilesToGenerate>
 								ApiUtil.java
 							</supportingFilesToGenerate>
-							<apiPackage>com.cdw.springenablement.helper_App.client.api</apiPackage>
-							<modelPackage>com.cdw.springenablement.helper_App.client.models</modelPackage>
+							<apiPackage>com.cdw.springenablement.helperapp.client.api</apiPackage>
+							<modelPackage>com.cdw.springenablement.helperapp.client.models</modelPackage>
 							<configOptions>
 								<delegatePatter>true</delegatePatter>
 								<dateLibrary>java8</dateLibrary>

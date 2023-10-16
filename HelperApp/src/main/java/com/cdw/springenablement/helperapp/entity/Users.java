@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
-
 import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,17 +22,20 @@ public class Users implements UserDetails {
 
     @Column(name = "first_name")
     @NotNull
-    @Size(min = 5)
+    @Size(min = 3)
     @Pattern(regexp = SuceessConstants.USERNAME_PATTERN, message = SuceessConstants.USERNAME_PATTERN_MESSAGE)
     private String firstName;
 
     @Column(name = "last_name")
     @NotNull
     @Size(min = 1)
+    @Pattern(regexp = SuceessConstants.USERNAME_PATTERN, message = SuceessConstants.USERNAME_PATTERN_MESSAGE)
     private String lastName;
 
     @Column(name="dob")
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Date must be in the past")
     private LocalDate dateOfBirth;
 
     @Column(name = "gender")

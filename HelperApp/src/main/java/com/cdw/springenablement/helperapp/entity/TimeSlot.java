@@ -1,11 +1,9 @@
 package com.cdw.springenablement.helperapp.entity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDate;
+
 import java.time.LocalTime;
 import java.util.List;
 
@@ -19,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 public class TimeSlot {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,16 +27,8 @@ public class TimeSlot {
     @Column(name = "end_time")
     private LocalTime endTime;
 
-    @NotNull
-    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Invalid date format. The expected format is yyyy-MM-dd")
-    @Column(name = "date")
-    private LocalDate date;
-
     @OneToMany(mappedBy = "timeSlot", cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     private List<Bookings> bookings;
-
-
-
 
     public Long getId() {
         return id;
@@ -64,13 +53,6 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 
 
     public List<Bookings> getBookings() {

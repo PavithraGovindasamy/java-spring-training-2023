@@ -45,4 +45,11 @@ public class SuceessConstants {
     public static final long TIME_LIMIT = 3 * 60 * 60 * 1000;
 
 
+    public static final String ALREADY_BLACKLISTED ="Already Blacklisted" ;
+    public static final String NO_HELPERS_AVAILABLE ="No Helpers available currently for the specified time slot and date" ;
+
+    public static  final String INVALID_TIMESLOT="Invalid timeslotId provided";
+
+    public  static final String PAST_DATE_NOT_ALLOWED="Booking for past dates is not allowed.";
+    public static final String INPUT_DATE ="Input date is after one month." ;
 }

@@ -1,8 +1,9 @@
 package com.cdw.springenablement.helperapp.exception;
 
 
-
-
+/**
+ * class which construct error message
+ */
 public class ValidationError {
     private String field;
     private String message;

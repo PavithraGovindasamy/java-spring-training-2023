@@ -99,25 +99,31 @@ public class AdminControllerTest {
     @Test
     public void testApproveRequest(){
         ApproveRequestRequest approveRequestRequest=new ApproveRequestRequest();
-        doNothing().when(adminService).approveRequest(approveRequestRequest);
+        Long id=1L;
+        List<Long> approvedIds=new ArrayList<>();
+        approvedIds.add(id);
+        when(adminService.approveRequest(approveRequestRequest)).thenReturn(approvedIds);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.approveRequest(approveRequestRequest);
         ApiResponseDto expectedResponse = new ApiResponseDto()
                 .message(SuceessConstants.APPROVED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
+        assertEquals(expectedResponse.getMessage()+" User IDs: "+approvedIds, responseEntity.getBody().getMessage());
     }
 
     @Test
     public void testRejectRequest(){
         RejectRequestRequest rejectRequestRequest=new RejectRequestRequest();
-        doNothing().when(adminService).rejectRequest(rejectRequestRequest);
+        Long id=1L;
+        List<Long> rejectedIds=new ArrayList<>();
+        rejectedIds.add(id);
+        when(adminService.rejectRequest(rejectRequestRequest)).thenReturn(rejectedIds);
         ResponseEntity<ApiResponseDto> responseEntity = adminController.rejectRequest(rejectRequestRequest);
         ApiResponseDto expectedResponse = new ApiResponseDto()
                 .message(SuceessConstants.REJECTED_SUCCESSFULLY_MESSAGE);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
+        assertEquals(expectedResponse.getMessage()+" User IDs: "+rejectedIds, responseEntity.getBody().getMessage());
     }
 
 

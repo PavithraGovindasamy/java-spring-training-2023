@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,15 +21,30 @@ public class UserController implements ResidentsApi {
     @Autowired
     public UserService userService;
 
+
+
     /**
      *
      * Method which give the available technicians timeslot
      * @return response where list of timeslot is returned
      */
+
+
     @Override
-    public ResponseEntity<List<TimeSlotDto>> getAvailableTechnicians() {
-        List<TimeSlotDto> technicianDtos = userService.getAvailableTechnicians();
+    public ResponseEntity<List<TimeSlotDto>> getAvailableTechnicians(LocalDate date,Long timeSlotId) {
+        List<TimeSlotDto> technicianDtos = userService.getAvailableTechnicians(date,timeSlotId);
         return ResponseEntity.ok(technicianDtos);
+    }
+
+    /**
+     * Returns all the timeslots
+     * @return
+     */
+
+    @Override
+    public ResponseEntity<List<TimeSlotDtos>> getAllTimeSlots() {
+        List<TimeSlotDtos> timeSlotDtos=userService.getAllTimeSlots();
+        return  ResponseEntity.ok(timeSlotDtos);
     }
 
     /**

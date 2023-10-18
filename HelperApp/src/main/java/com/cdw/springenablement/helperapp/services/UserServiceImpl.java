@@ -1,6 +1,7 @@
 package com.cdw.springenablement.helperapp.services;
 
 import com.cdw.springenablement.helperapp.client.models.*;
+import com.cdw.springenablement.helperapp.client.models.TimeSlotDtos;
 import com.cdw.springenablement.helperapp.constants.ErrorConstants;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import com.cdw.springenablement.helperapp.dto.TimeSlotDtoDisplay;
@@ -12,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.security.core.Authentication;
@@ -82,7 +85,6 @@ public class UserServiceImpl implements UserService {
                 throw new HelperAppException(ErrorConstants.CANNOT_REGISTER_ADMIN_ERROR);
             }
         }
-
         Users user = new Users();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
@@ -110,11 +112,10 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<Users> newUser = userRepository.findByEmail(authentication.getName());
         Long userid = newUser.get().getId();
-
         Long timeSlotId = bookingTechnicianDto.getTimeSlotId();
         Long helperId = bookingTechnicianDto.getHelperId();
         TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId).orElse(null);
-        Bookings booking = bookingRepository.findByHelperIdAndTimeSlot(helperId, timeSlot);
+        Bookings booking = bookingRepository.findByHelperIdAndTimeSlotAndDate(helperId, timeSlot,bookingTechnicianDto.getDate());
         Users users = userRepository.findById(userid).orElse(null);
         Set<Roles> roles = users.getRoles();
         boolean isRoleHelper = roles.stream()
@@ -132,7 +133,7 @@ public class UserServiceImpl implements UserService {
         Set<Roles> helperRole = helperUser.getRoles();
 
         if(timeSlot==null){
-            throw  new HelperAppException("No such timeslot exists");
+            throw  new HelperAppException(ErrorConstants.NO_TIMESLOT);
         }
         if (booking != null) {
             throw new HelperAppException(ErrorConstants.HELPER_ALREADY_BOOKED_ERROR);
@@ -142,6 +143,7 @@ public class UserServiceImpl implements UserService {
         newBooking.setUsers(users);
         newBooking.setHelperId(helperId);
         newBooking.setTimeSlot(timeSlot);
+        newBooking.setDate(bookingTechnicianDto.getDate());
         bookingRepository.save(newBooking);
     }
 
@@ -153,39 +155,75 @@ public class UserServiceImpl implements UserService {
      */
 
     @Override
-    public List<TimeSlotDto> getAvailableTechnicians() {
-        List<Bookings> bookings = bookingRepository.findAll();
-        List<TimeSlot> allTimeSlots = timeSlotRepository.findAll();
-        List<TimeSlotDto> availableSlotsDtoList = allTimeSlots.stream()
-                .map(slot -> {
-                    List<Bookings> bookingsForSlot = bookingRepository.findByTimeSlotId(slot.getId());
-                    List<Long> bookedHelperIds = bookingsForSlot.stream()
-                            .map(booking -> Long.valueOf(booking.getHelperId()))
-                            .collect(Collectors.toList());
+    public List<TimeSlotDto> getAvailableTechnicians(LocalDate date, Long timeslotId) {
+        LocalDate currentDate = LocalDate.now();
+        boolean isFutureDate = date.isAfter(currentDate);
+        boolean isWithinOneMonth = date.isBefore(currentDate.plusMonths(1));
 
-                    List<Helper> availableHelpers = bookedHelperIds.isEmpty() ?
-                            helperRepository.findAll() :
-                            helperRepository.findByIdNotIn(bookedHelperIds);
-
-                    availableHelpers = availableHelpers.stream()
-                            .filter(helper -> userRepository.findById(helper.getUser().getId())
-                                    .map(user -> SuceessConstants.STATUS_APPROVED.equals(user.getApproved()))
-                                    .orElse(false))
-                            .collect(Collectors.toList());
-
-                    if (!availableHelpers.isEmpty()) {
-                        return TimeSlotDtoDisplay.createTimeSlotDto(slot.getId(), slot.getStartTime(), slot.getEndTime(), slot.getDate(), availableHelpers);
-                    } else {
-                        return null;
-                    }
-                })
-                .filter(slotDto -> slotDto != null)
-                .collect(Collectors.toList());
-        if(availableSlotsDtoList.isEmpty())
-        {
-            throw new HelperAppException("No Helpers available currently");
+        Boolean flag=false;
+        if (date.isBefore(currentDate)) {
+            throw new HelperAppException(SuceessConstants.PAST_DATE_NOT_ALLOWED);
         }
-        return availableSlotsDtoList;
+        if (isFutureDate && !isWithinOneMonth) {
+           throw  new HelperAppException(SuceessConstants.INPUT_DATE);
+        }
+
+
+        List<TimeSlotDto> timeSlotDtos = new ArrayList<>();
+        List<TimeSlot> timeSlots;
+        if (timeslotId != null) {
+            TimeSlot timeSlot = timeSlotRepository.findById(timeslotId)
+                    .orElseThrow(() -> new HelperAppException(SuceessConstants.INVALID_TIMESLOT));
+            List<Helper> availableHelpers = getAvailableHelpersForTimeSlot(date, timeSlot,flag);
+            TimeSlotDto timeSlotDto = TimeSlotDtoDisplay.createTimeSlotDto(
+                    timeSlot.getId(), timeSlot.getStartTime(), timeSlot.getEndTime(), date, availableHelpers);
+            timeSlotDtos.add(timeSlotDto);
+        } else {
+             flag=true;
+            timeSlots = timeSlotRepository.findAll();
+            for (TimeSlot timeSlot : timeSlots) {
+                    List<Helper> availableHelpers = getAvailableHelpersForTimeSlot(date, timeSlot,flag);
+
+                    TimeSlotDto timeSlotDto = TimeSlotDtoDisplay.createTimeSlotDto(
+                            timeSlot.getId(), timeSlot.getStartTime(), timeSlot.getEndTime(), date, availableHelpers);
+
+                    timeSlotDtos.add(timeSlotDto);
+                }
+        }
+
+        return timeSlotDtos;
+    }
+
+    /**
+     * Retrieves available helpers
+     * @param date
+     * @param timeSlot
+     * @param flag
+     * @return
+     */
+
+
+    public List<Helper> getAvailableHelpersForTimeSlot(LocalDate date, TimeSlot timeSlot,Boolean flag) {
+        List<Bookings> bookings = bookingRepository.findByTimeSlotIdAndDate(timeSlot.getId(), date);
+        List<Long> bookedHelperIds = bookings.stream()
+                .map(booking -> Long.valueOf(booking.getHelperId()))
+                .collect(Collectors.toList());
+
+        List<Helper> availableHelpers = bookedHelperIds.isEmpty() ?
+                helperRepository.findAll() :
+                helperRepository.findByIdNotIn(bookedHelperIds);
+
+        availableHelpers = availableHelpers.stream()
+                .filter(helper -> userRepository.findById(helper.getUser().getId())
+                        .map(user -> SuceessConstants.STATUS_APPROVED.equals(user.getApproved()))
+                        .orElse(false))
+                .collect(Collectors.toList());
+
+        if (availableHelpers.isEmpty() && !flag) {
+            throw new HelperAppException(SuceessConstants.NO_HELPERS_AVAILABLE);
+        }
+
+        return availableHelpers;
     }
 
 
@@ -233,12 +271,7 @@ public class UserServiceImpl implements UserService {
         Long id = newUser.get().getId();
         List<Bookings> bookingDtos = bookingRepository.findByUsers(newUser);
 
-        if (bookingDtos.isEmpty()) {
-            throw new HelperAppException("No bookings found for the user.");
-        }
-
         List<BookingDto> booking = bookingDtos.stream()
-
                 .map(bookings -> {
                     BookingDto bookingDto = new BookingDto();
                     Optional<Helper> helper = helperRepository.findById(bookings.getHelperId());
@@ -249,8 +282,7 @@ public class UserServiceImpl implements UserService {
                     BookingDtoTimeslotDetails timeslotDetails = new BookingDtoTimeslotDetails();
                     timeslotDetails.setStartTime(timeSlot.getStartTime().toString());
                     timeslotDetails.setEndTime(timeSlot.getEndTime().toString());
-                    timeslotDetails.setDate(LocalDate.parse(timeSlot.getDate().toString()));
-
+                    timeslotDetails.setDate(bookings.getDate());
                     bookingDto.setTimeslotDetails(timeslotDetails);
                     return bookingDto;
 
@@ -261,6 +293,24 @@ public class UserServiceImpl implements UserService {
         return booking;
     }
 
+    /**
+     * Method that gets all the timeslots
+     * @return
+     */
+
+    public List<TimeSlotDtos> getAllTimeSlots() {
+        List<TimeSlot> timeSlots = timeSlotRepository.findAll();
+        List<TimeSlotDtos> timeSlotDtos = new ArrayList<>();
+        for (TimeSlot timeSlot : timeSlots) {
+            TimeSlotDtos timeSlotDto = new TimeSlotDtos();
+            timeSlotDto.setId(timeSlot.getId());
+            timeSlotDto.setStartTime(String.valueOf(timeSlot.getStartTime()));
+            timeSlotDto.setEndTime(String.valueOf(timeSlot.getEndTime()));
+
+            timeSlotDtos.add(timeSlotDto);
+        }
+        return timeSlotDtos;
+    }
 
 }
 

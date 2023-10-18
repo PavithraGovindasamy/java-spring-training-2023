@@ -57,17 +57,7 @@ public class Users implements UserDetails {
     @Column(name = "approved")
     private String  approved;
 
-    public String getApproved() {
-        return approved;
-    }
 
-    public void setApproved(String approved) {
-        this.approved = approved;
-    }
-
-    public Users() {
-
-    }
     @ManyToMany(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(
             name = "user_roles",
@@ -80,7 +70,17 @@ public class Users implements UserDetails {
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Bookings> bookings;
 
+    public String getApproved() {
+        return approved;
+    }
 
+    public void setApproved(String approved) {
+        this.approved = approved;
+    }
+
+    public Users() {
+
+    }
 
     public List<Bookings> getBookings() {
         return bookings;

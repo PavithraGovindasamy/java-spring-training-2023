@@ -60,11 +60,9 @@ public class AdminServiceImpl implements AdminService {
                 return approvalDto;
             }).collect(Collectors.toList());
             if (approvalDtos.isEmpty()) {
-                throw new HelperAppException("No Approval request");
+                throw new HelperAppException(ErrorConstants.NO_APPROVAL_REQUEST);
             }
             return approvalDtos;
-
-
     }
 
 
@@ -84,6 +82,12 @@ public class AdminServiceImpl implements AdminService {
         userRepository.saveAll(usersToApprove);
         return approvedIds;
     }
+
+    /**
+     * Method thqt gets the approved requests
+     * @param rejectRequestRequest
+     * @return
+     */
 
     @Override
     public List<Long> rejectRequest(RejectRequestRequest rejectRequestRequest) {
@@ -112,7 +116,7 @@ public class AdminServiceImpl implements AdminService {
                 TimeSlot timeSlot = timeSlotRepository.findById(timeslotId).orElse(null);
                 bookingRepository.delete(booking);
             }
-            boolean isResident = roles.stream().anyMatch(role -> role.getName().equals("Role_Resident"));
+            boolean isResident = roles.stream().anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_RESIDENT));
             if (isResident) {
                 userRepository.deleteById(Long.valueOf(residentId));
             } else {
@@ -150,9 +154,9 @@ public class AdminServiceImpl implements AdminService {
     public void updateMember(HelperDto helperDto) {
         Users users = userRepository.findById(Long.valueOf(helperDto.getUserId())).orElse(null);
         if(users==null){
-            throw new HelperAppException("No users found ");
+            throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
         }
-        users.setEmail(helperDto.getEmail());
+        users.setEmail(users.getEmail());
         users.setGender(helperDto.getGender());
         users.setDateOfBirth(helperDto.getDateOfBirth());
         users.setFirstName(helperDto.getFirstName());

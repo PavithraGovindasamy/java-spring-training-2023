@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
+/**
+ * Controller class that handles authentication-related endpoints.
+ * @Author pavithra
+ */
 @RestController
 public class AuthController implements AuthApi {
 
@@ -25,8 +28,6 @@ public class AuthController implements AuthApi {
 
     @Autowired
     public TokenBlacklistService tokenBlacklistService ;
-
-
 
     /**
      *
@@ -67,7 +68,7 @@ public class AuthController implements AuthApi {
     public ResponseEntity<ApiResponseDto> logoutUser(LogoutUserRequest logoutUserRequest) {
         String token = logoutUserRequest.getToken();
         if (tokenBlacklistService.isTokenBlacklisted(token)) {
-            throw new HelperAppException("Already Blacklisted");
+            throw new HelperAppException(SuceessConstants.ALREADY_BLACKLISTED);
         }
         tokenBlacklistService.addToBlacklist(token);
         return ResponseUtil.generateSuccessResponse(SuceessConstants.LOGGEDOUT_SUCCESSFULLY_MESSAGE);

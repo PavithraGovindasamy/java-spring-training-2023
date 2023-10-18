@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 /**
  * Entity that stores the booking details
  * @Author pavithra
@@ -28,7 +30,12 @@ public class Bookings {
     private Users users;
 
     @Column(name = "helper_id")
+    @NotNull
     private Long helperId;
+
+    @Column(name = "booking_date")
+    @NotNull
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade ={ CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "timeslot_id")

@@ -1,7 +1,9 @@
 package com.cdw.springenablement.helperapp.entity;
 
 
+import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +28,7 @@ public class Helper {
 
 
     @Column(name = "specialization")
+    @Pattern(regexp = SuceessConstants.USERNAME_PATTERN, message = SuceessConstants.USERNAME_PATTERN_MESSAGE)
     private String specialization;
 
 

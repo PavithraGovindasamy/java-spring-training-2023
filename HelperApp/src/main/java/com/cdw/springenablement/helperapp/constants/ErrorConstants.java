@@ -18,4 +18,8 @@ public class ErrorConstants {
     public static final String USER_NOT_FOUND_ERROR_FORMAT = "User not found with ID:";
     public static final String USER_NOT_APPROVED_MESSAGE = "User is not yet approved by admin";
     public static final String USER_REJECTED_MESSAGE = "User is rejected by admin";
+
+    public static final String NO_TIMESLOT="No such timeslot exists";
+
+    public  static  final  String NO_APPROVAL_REQUEST="No Approval request";
 }

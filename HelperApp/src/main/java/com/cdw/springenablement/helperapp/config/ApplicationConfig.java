@@ -15,12 +15,21 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+/**
+ * Defines beans related to user authentication and security.
+ */
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
+    /**
+     *
+     * Retrieves a user from the database by their email address.
+     * @return UserDetailsService bean for Spring Security.
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username).orElseThrow(() ->
@@ -28,11 +37,10 @@ public class ApplicationConfig {
         );
     }
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
-
+    /**
+     *
+     * @return AuthenticationProvider bean for Spring Security.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -41,15 +49,24 @@ public class ApplicationConfig {
         return authenticationProvider;
     }
 
+    /**
+     *
+     *
+     * @param configuration
+     * @return AuthenticationManager
+     * @throws Exception if an error occurs.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
+    /**
+     *
+     * @return PasswordEncoder bean for password hashing.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }

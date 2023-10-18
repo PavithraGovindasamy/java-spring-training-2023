@@ -1,5 +1,8 @@
 package com.cdw.springenablement.helperapp.exception;
 
+/**
+ * class that sets the error messag4
+ */
 public class ExceptionResponse {
     private String message;
 

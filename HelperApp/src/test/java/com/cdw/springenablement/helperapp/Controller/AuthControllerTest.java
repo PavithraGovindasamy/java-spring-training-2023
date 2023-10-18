@@ -4,6 +4,7 @@ import com.cdw.springenablement.helperapp.client.models.*;
 import com.cdw.springenablement.helperapp.constants.ErrorConstants;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import com.cdw.springenablement.helperapp.controller.AuthController;
+import com.cdw.springenablement.helperapp.exception.HelperAppException;
 import com.cdw.springenablement.helperapp.services.AuthenticationService;
 import com.cdw.springenablement.helperapp.services.TokenBlacklistService;
 import com.cdw.springenablement.helperapp.services.interfaces.UserService;
@@ -43,29 +44,29 @@ public class AuthControllerTest {
 
 
 
-//    @Test
-//    public void testRegisterUser() {
-//        UserDto userDto = new UserDto();
-//        userDto.setRole(Collections.singletonList("Role_Helper"));
-//        userDto.setSpecialisation("plumber");
-//        Long id=1L;
-//        when(userService.registerUser(userDto)).thenReturn(id);
-//        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        ApiResponseDto responseBody = response.getBody();
-//        assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
-//    }
+    @Test
+    public void testRegisterUser() {
+        UserDto userDto = new UserDto();
+        userDto.setRole(Collections.singletonList("Role_Helper"));
+        userDto.setSpecialisation("plumber");
+        Long id=1L;
+        when(userService.registerUser(userDto)).thenReturn(id);
+        ResponseEntity<RegisterDto> response = authController.registerUser(userDto);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        RegisterDto responseBody = response.getBody();
+        assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
+    }
 
-//    @Test
-//    public void testRegisterUser_WithoutSpecialisation() {
-//        UserDto userDto = new UserDto();
-//        userDto.setRole(Collections.singletonList("Role_Helper"));
-//        Long id=1L;
-//        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        ApiResponseDto responseBody = response.getBody();
-//        assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
-//    }
+    @Test(expected= HelperAppException.class)
+    public void testRegisterUser_WithoutSpecialisation() {
+        UserDto userDto = new UserDto();
+        userDto.setRole(Collections.singletonList("Role_Helper"));
+        Long id=1L;
+        ResponseEntity<RegisterDto> response = authController.registerUser(userDto);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        RegisterDto responseBody = response.getBody();
+        assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
+    }
 
 
     @Test
@@ -87,9 +88,7 @@ public class AuthControllerTest {
         logoutUserRequest.setToken("token");
         String token = logoutUserRequest.getToken();
         doNothing().when(tokenBlacklistService).addToBlacklist("token");
-
         ResponseEntity<ApiResponseDto> response = authController.logoutUser(logoutUserRequest);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponseDto responseBody = response.getBody();
         assertEquals(SuceessConstants.LOGGEDOUT_SUCCESSFULLY_MESSAGE, responseBody.getMessage());

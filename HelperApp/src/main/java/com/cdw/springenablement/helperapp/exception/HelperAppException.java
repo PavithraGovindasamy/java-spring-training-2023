@@ -2,6 +2,9 @@ package com.cdw.springenablement.helperapp.exception;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * class which gets the message and status code and sends as a response
+ */
 public class HelperAppException extends RuntimeException {
     private final HttpStatus httpStatus;
 

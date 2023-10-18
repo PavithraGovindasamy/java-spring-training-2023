@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+/**
+ * Class that constructs objects for response objects
+ */
 public class ResponseUtil {
     public static ResponseEntity<ApiResponseDto> generateSuccessResponse(String message) {
         ApiResponseDto response = new ApiResponseDto()

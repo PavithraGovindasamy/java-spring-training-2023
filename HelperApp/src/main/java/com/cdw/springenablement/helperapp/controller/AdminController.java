@@ -66,7 +66,7 @@ public class AdminController implements AdminApi {
     @Override
     public ResponseEntity<ApiResponseDto> removeResident(Long residentId) {
         adminService.removeResident(residentId);
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE);
+        return ResponseUtil.generateDeleteResponse(SuceessConstants.RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE);
     }
 
     /**
@@ -78,7 +78,7 @@ public class AdminController implements AdminApi {
     @Override
     public ResponseEntity<ApiResponseDto> removeHelper(Long helperId) {
         adminService.removeHelper(helperId);
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.HELPER_REMOVED_SUCCESSFULLY_MESSAGE);
+        return ResponseUtil.generateDeleteResponse(SuceessConstants.HELPER_REMOVED_SUCCESSFULLY_MESSAGE);
     }
 
     /**
@@ -90,6 +90,6 @@ public class AdminController implements AdminApi {
     @Override
     public ResponseEntity<ApiResponseDto> updateHelper(HelperDto helperDto) {
         adminService.updateMember(helperDto);
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.UPDATED_SUCCESSFULLY_MESSAGE);
+        return ResponseUtil.generateUpdateResponse(SuceessConstants.UPDATED_SUCCESSFULLY_MESSAGE);
     }
 }

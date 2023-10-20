@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.auth0.jwt.algorithms.Algorithm;

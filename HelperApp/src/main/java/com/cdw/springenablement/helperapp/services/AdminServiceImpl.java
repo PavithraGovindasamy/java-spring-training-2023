@@ -1,17 +1,16 @@
 package com.cdw.springenablement.helperapp.services;
-
 import com.cdw.springenablement.helperapp.client.models.*;
 import com.cdw.springenablement.helperapp.constants.ErrorConstants;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import com.cdw.springenablement.helperapp.entity.*;
 import com.cdw.springenablement.helperapp.exception.HelperAppException;
+import com.cdw.springenablement.helperapp.exception.NoContentException;
 import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.interfaces.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,9 +58,6 @@ public class AdminServiceImpl implements AdminService {
                 approvalDto.setDateOfBirth(user.getDateOfBirth());
                 return approvalDto;
             }).collect(Collectors.toList());
-            if (approvalDtos.isEmpty()) {
-                throw new HelperAppException(ErrorConstants.NO_APPROVAL_REQUEST);
-            }
             return approvalDtos;
     }
 
@@ -99,7 +95,6 @@ public class AdminServiceImpl implements AdminService {
         usersToReject.forEach(user -> user.setApproved(SuceessConstants.STATUS_REJECTED));
         userRepository.saveAll(usersToReject);
         return rejectedIds;
-
     }
 
 
@@ -133,14 +128,25 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void removeHelper(Long helperId) {
         Helper helper = helperRepository.findById(helperId).orElse(null);
-        if (helper == null) {
+        if (helper != null) {
+
+            Long userId = helper.getUser().getId();
+            Users user = userRepository.findById(userId).orElse(null);
+            Set<Roles> roles = null;
+            if (user != null) {
+                roles = user.getRoles();
+            }
+            boolean isHelper = roles.stream().anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_HELPER));
+            if (isHelper) {
+                userRepository.delete(user);
+            } else {
+                throw new HelperAppException(ErrorConstants.DELETE_NON_HELPER_ERROR);
+            }
+        }
+        else {
             throw new HelperAppException(ErrorConstants.HELPER_NOT_FOUND_ERROR);
         }
-        Long userId = helper.getUser().getId();
-        Users user = userRepository.findById(userId).orElse(null);
-        if (user != null) {
-            userRepository.delete(user);
-        }
+
         List<Bookings> bookings = bookingRepository.findByHelperId(Long.valueOf(helperId));
         bookings.forEach(book -> bookingRepository.deleteById(book.getId()));
         helperRepository.delete(helper);
@@ -153,8 +159,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateMember(HelperDto helperDto) {
         Users users = userRepository.findById(Long.valueOf(helperDto.getUserId())).orElse(null);
-        if(users==null){
+        Set<Roles> roles;
+        if (users == null) {
             throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
+        } else {
+            roles = users.getRoles();
+        }
+        boolean isAdmin = roles.stream().anyMatch(role -> role.getName().equals(SuceessConstants.ROLE_ADMIN));
+        if(isAdmin) {
+            throw new HelperAppException(ErrorConstants.DELETE_NON_ADMIN_ERROR);
         }
         users.setEmail(users.getEmail());
         users.setGender(helperDto.getGender());

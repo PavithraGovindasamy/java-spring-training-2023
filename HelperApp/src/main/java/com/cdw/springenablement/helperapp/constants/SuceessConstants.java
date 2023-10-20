@@ -24,7 +24,7 @@ public class SuceessConstants {
 
     public static final String NO_USER_REJECT_MESSAGE = "No users to reject";
 
-    public static final String NO_USER_APPROVE_MESSAGE = "No users to approve";
+    public static final String NO_USER_APPROVE_MESSAGE = "User has been apporved already";
 
     public static final String ROLE_ADMIN = "Role_Admin";
     public static final String ROLE_HELPER = "Role_Helper";

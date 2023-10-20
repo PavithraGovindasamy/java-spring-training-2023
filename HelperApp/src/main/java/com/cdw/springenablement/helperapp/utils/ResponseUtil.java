@@ -11,19 +11,30 @@ import java.util.List;
  * Class that constructs objects for response objects
  */
 public class ResponseUtil {
+
     public static ResponseEntity<ApiResponseDto> generateSuccessResponse(String message) {
         ApiResponseDto response = new ApiResponseDto()
                 .message(message)
                 .statusCode((long) HttpStatus.OK.value());
+
         return ResponseEntity.ok(response);
     }
 
-    public static ResponseEntity<ApiResponseDto> generateSuccessResponse(String message, Long id) {
+    public static ResponseEntity<ApiResponseDto> generateDeleteResponse(String message) {
+        ApiResponseDto response = new ApiResponseDto()
+                .message(message)
+                .statusCode((long) HttpStatus.NO_CONTENT.value());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+
+
+    public static ResponseEntity<ApiResponseDto> generateCreateResponse(String message, Long id) {
         String completeMessage = message + " User ID: " + id;
         ApiResponseDto response = new ApiResponseDto()
                 .message(completeMessage)
-                .statusCode((long) HttpStatus.OK.value());
-        return ResponseEntity.ok(response);
+                .statusCode((long) HttpStatus.CREATED.value());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
@@ -34,19 +45,6 @@ public class ResponseUtil {
         return ResponseEntity.ok(response);
     }
 
-    public static ResponseEntity<RegisterDto> generateSuccessResponse(String message, Long id, UserDto userDto) {
-        RegisterDto registerDto = new RegisterDto();
-        String completeMessage = message + " User ID: " + id;
-        registerDto.setStatusCode((long) HttpStatus.OK.value());
-        registerDto.setMessage(completeMessage);
-        registerDto.setFirstName(userDto.getFirstName());
-        registerDto.setLastName(userDto.getLastName());
-        registerDto.setDateOfBirth(userDto.getDateOfBirth());
-        registerDto.setGender(userDto.getGender());
-        registerDto.setEmail(userDto.getEmail());
-
-        return ResponseEntity.ok(registerDto);
-    }
 
     public static ResponseEntity<ApiResponseDto> generateSuccessResponse(String message, List<Long> userIds) {
         String completeMessage = message + " User IDs: " + userIds;
@@ -57,5 +55,10 @@ public class ResponseUtil {
     }
 
 
-
+    public static ResponseEntity<ApiResponseDto> generateUpdateResponse(String updatedSuccessfullyMessage) {
+        ApiResponseDto response = new ApiResponseDto()
+                .message(updatedSuccessfullyMessage)
+                .statusCode((long) HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

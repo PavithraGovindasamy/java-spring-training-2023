@@ -35,16 +35,16 @@ public class AuthController implements AuthApi {
      * @return Response where the user is registered
      */
     @Override
-    public ResponseEntity<RegisterDto> registerUser(UserDto userDto) {
+    public ResponseEntity<ApiResponseDto> registerUser(UserDto userDto) {
         if (userDto.getRole().contains(SuceessConstants.ROLE_HELPER) && userDto.getSpecialisation() == null) {
-            throw new HelperAppException(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, HttpStatus.BAD_REQUEST);
+            throw new HelperAppException(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR);
         }
         Long id = userService.registerUser(userDto);
         if (userDto.getRole().contains(SuceessConstants.ROLE_HELPER) && userDto.getSpecialisation() != null) {
             userService.updateHelperSpecialization(id, userDto.getSpecialisation());
         }
 
-        return ResponseUtil.generateSuccessResponse(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE, id, userDto);
+        return ResponseUtil.generateCreateResponse(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE, id);
     }
     /**
      *

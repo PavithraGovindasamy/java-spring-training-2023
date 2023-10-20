@@ -66,36 +66,14 @@ public class UserControllerTest {
         ResponseEntity<ApiResponseDto> responseEntity = userController.bookTechnicianSlot(bookingTechnicianDto);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseDto.getMessage(), responseEntity.getBody().getMessage());
-
     }
 
 
-
-
-    @Test
-    public void testAvailableTechnicians() {
-        List<TimeSlotDto> timeSlotDtos = new ArrayList<>();
-        Long id=1L;
-        LocalDate date= LocalDate.parse("2023-09-09");
-        when(userService.getAvailableTechnicians(date,id)).thenReturn(timeSlotDtos);
-        ResponseEntity<List<TimeSlotDto>> listResponseEntity =
-                userController.getAvailableTechnicians(date,id);
-    }
-
-
-    @Test
-    public void  testAllTimeSlots(){
-        List<TimeSlotDtos> timeSlotDtos=new ArrayList<>();
-       when(userService.getAllTimeSlots()).thenReturn(timeSlotDtos);
-       ResponseEntity<List<TimeSlotDtos>> timeSlotDtoss=userController.getAllTimeSlots();
-       assertEquals(timeSlotDtos,timeSlotDtoss.getBody());
-    }
 
 
     @Test
     public void testGetUserBookings() {
         List<BookingDto> expectedBookings = new ArrayList<>();
-
         ResponseEntity<List<BookingDto>> responseEntity = userController.getUserBookings();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedBookings, responseEntity.getBody());

@@ -51,9 +51,9 @@ public class AuthControllerTest {
         userDto.setSpecialisation("plumber");
         Long id=1L;
         when(userService.registerUser(userDto)).thenReturn(id);
-        ResponseEntity<RegisterDto> response = authController.registerUser(userDto);
+        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        RegisterDto responseBody = response.getBody();
+        ApiResponseDto responseBody = response.getBody();
         assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
     }
 
@@ -62,9 +62,9 @@ public class AuthControllerTest {
         UserDto userDto = new UserDto();
         userDto.setRole(Collections.singletonList("Role_Helper"));
         Long id=1L;
-        ResponseEntity<RegisterDto> response = authController.registerUser(userDto);
+        ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        RegisterDto responseBody = response.getBody();
+        ApiResponseDto responseBody = response.getBody();
         assertEquals(ErrorConstants.SPECIALIZATION_REQUIRED_ERROR, responseBody.getMessage());
     }
 

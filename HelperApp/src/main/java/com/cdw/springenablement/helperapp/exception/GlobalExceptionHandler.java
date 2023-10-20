@@ -38,6 +38,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(ex.getHttpStatus()).body(response);
     }
 
+    /**
+     * Handles custom exceptions thrown within the application when no content is present
+     * @param ex
+     * @return ResponseEntity containing the custom error response
+     */
+
+
+    @ExceptionHandler(NoContentException.class)
+    public ResponseEntity<ApiResponseDto> handleNoContentException(NoContentException ex) {
+        ApiResponseDto response = new ApiResponseDto()
+                .message(ex.getMessage())
+                .statusCode((long) ex.getHttpStatus().value());
+        return ResponseEntity.status(ex.getHttpStatus()).body(response);
+    }
+
+
 
     /**
      * Handles validation exceptions caused by  bean validations.

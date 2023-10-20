@@ -13,10 +13,8 @@ public  interface UserService {
     Long registerUser(UserDto userDto) ;
     void bookTechnician(BookingTechnicianDto bookingTechnicianDto) ;
 
-    List<TimeSlotDto> getAvailableTechnicians(LocalDate date, Long timeSlotId) ;
     void updateHelperSpecialization(Long id, String specialisation) ;
 
     List<BookingDto> getUserBookings();
 
-    List<TimeSlotDtos> getAllTimeSlots();
 }

@@ -36,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterDto'
+                $ref: '#/components/schemas/ApiResponseDto'
         '401':
           description: UnAuthorised access
 
@@ -121,61 +121,6 @@ paths:
           description: Unauthorized access
       security:
         - bearerAuth: []
-
-
-  /residents/available-technicians:
-    get:
-      tags:
-        - Residents
-      summary: Get Available Technicians
-      operationId: getAvailableTechnicians
-      parameters:
-        - name: date
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-        - name : timeslotId
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful response with a list of available technicians.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TimeSlotDto'
-        '401':
-          description: Unauthorized access
-      security:
-        - bearerAuth: [ ]
-
-  /residents/available-timeslots:
-    get:
-      tags:
-        - Residents
-      summary: Get all time slots
-      operationId: getAllTimeSlots
-      responses:
-        '200':
-          description: Successful response with a list of all time slots.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TimeSlotDtos'
-        '401':
-          description: Unauthorized access
-      security:
-        - bearerAuth: []
-
 
   /residents/bookings:
     get:
@@ -383,6 +328,60 @@ paths:
       security:
         - bearerAuth: []
 
+  /helpers/available-helpers:
+    get:
+      tags:
+        - Helpers
+      summary: Get Available Technicians
+      operationId: getAvailableTechnicians
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: timeslotId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response with a list of available technicians.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlotDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: [ ]
+
+  /helpers/available-timeslots:
+    get:
+      tags:
+        - Helpers
+      summary: Get all time slots
+      operationId: getAllTimeSlots
+      responses:
+        '200':
+          description: Successful response with a list of all time slots.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlotDtos'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: [ ]
+
+
 components:
   schemas:
     UserDto:
@@ -501,23 +500,6 @@ components:
           format: int64
         message:
           type: string
-        firstName:
-          type: string
-          example: Pavi
-        lastName:
-          type: string
-          example: G
-        dateOfBirth:
-          type: string
-          format: date
-          example: 1990-01-01
-        gender:
-          type: string
-          example: Female
-        email:
-          type: string
-          format: email
-          example: pavi@gmail.com
 
     AuthenticationRequest:
       type: object

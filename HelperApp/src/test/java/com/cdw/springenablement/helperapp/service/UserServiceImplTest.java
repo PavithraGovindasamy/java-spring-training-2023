@@ -192,7 +192,6 @@ public class UserServiceImplTest {
                 .map(bookings2 -> {
                     BookingDto bookingDto=new BookingDto();
                     bookingDto.setBookingId(bookingDto.getBookingId());
-                    bookingDto.setSpecialisation(bookingDto.getSpecialisation());
                     return bookingDto;
                 }).collect(Collectors.toList());
         Helper helper = new Helper();
@@ -200,7 +199,6 @@ public class UserServiceImplTest {
         helper.setSpecialization("Plumber");
         BookingDto bookingDtos=new BookingDto();
         bookingDtos.setBookingId(id);
-        bookingDtos.setSpecialisation(bookingDtos.getSpecialisation());
        userService.getUserBookings();
     }
 

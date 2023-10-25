@@ -1,5 +1,4 @@
 package com.cdw.springenablement.helperapp.services;
-
 import com.cdw.springenablement.helperapp.client.models.HelperAppointmentDto;
 import com.cdw.springenablement.helperapp.client.models.TimeSlotDto;
 import com.cdw.springenablement.helperapp.client.models.TimeSlotDtos;
@@ -14,6 +13,8 @@ import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.interfaces.HelperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -78,8 +79,9 @@ public class HelperServiceImpl implements HelperService {
      * @return
      */
 
-    public List<TimeSlotDtos> getAllTimeSlots() {
-        List<TimeSlot> timeSlots = timeSlotRepository.findAll();
+    public List<TimeSlotDtos> getAllTimeSlots(Long offset,Long pageSize) {
+        Pageable pageable = PageRequest.of(Math.toIntExact(offset), Math.toIntExact(pageSize));
+        List<TimeSlot> timeSlots = timeSlotRepository.findAll(pageable).stream().collect(Collectors.toList());
         List<TimeSlotDtos> timeSlotDtos = new ArrayList<>();
         for (TimeSlot timeSlot : timeSlots) {
             TimeSlotDtos timeSlotDto = new TimeSlotDtos();
@@ -99,6 +101,7 @@ public class HelperServiceImpl implements HelperService {
 
     @Override
     public List<TimeSlotDto> getAvailableTechnicians(LocalDate date, Long timeslotId) {
+
         LocalDate currentDate = LocalDate.now();
         boolean isFutureDate = date.isAfter(currentDate);
         boolean isWithinOneMonth = date.isBefore(currentDate.plusMonths(1));

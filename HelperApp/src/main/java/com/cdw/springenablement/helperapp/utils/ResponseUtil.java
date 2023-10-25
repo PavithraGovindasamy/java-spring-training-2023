@@ -1,7 +1,5 @@
 package com.cdw.springenablement.helperapp.utils;
 import com.cdw.springenablement.helperapp.client.models.ApiResponseDto;
-import com.cdw.springenablement.helperapp.client.models.RegisterDto;
-import com.cdw.springenablement.helperapp.client.models.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

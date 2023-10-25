@@ -58,7 +58,7 @@ public class HelperServiceImplTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public  void testGetAppointment(){
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken("example",null);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
@@ -129,7 +129,6 @@ public class HelperServiceImplTest {
         Set<Roles> roles=user.getRoles();
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         Helper helper=new Helper();
-
         Users users=new Users();
         users.setId(userId);
         users.setFirstName("pavi");
@@ -207,7 +206,6 @@ public class HelperServiceImplTest {
         mockHelper.setId(1L);
         mockHelper.setSpecialization("Plumber");
         List<Helper> availableHelpers = List.of(mockHelper);
-        when(timeSlotRepository.findById(timeslotId)).thenReturn(Optional.of(mockTimeSlot));
         List<TimeSlotDto> result = helperService.getAvailableTechnicians(currentDate, timeslotId);
     }
 
@@ -235,6 +233,7 @@ public class HelperServiceImplTest {
         List<TimeSlot> timeSlots = new ArrayList<>();
         TimeSlot timeSlot = new TimeSlot();
         long id = 1L;
+        Integer offset=1;
         timeSlot.setId(id);
         timeSlot.setStartTime(LocalTime.parse("01:00"));
         timeSlot.setEndTime(LocalTime.parse("02:00"));
@@ -248,7 +247,7 @@ public class HelperServiceImplTest {
             timeSlotDtos1.setId(id);
             timeSlotDtos.add(timeSlotDtos1);
         }
-        List<TimeSlotDtos> timeSlotDtos2 = helperService.getAllTimeSlots();
+        List<TimeSlotDtos> timeSlotDtos2 = helperService.getAllTimeSlots(id,id);
     }
 
     @Test
@@ -286,7 +285,7 @@ public class HelperServiceImplTest {
     public void testGetAvailableTechniciansWithNullTimeslotId() {
         LocalDate currentDate = LocalDate.now();
         Long timeslotId = null;
-        LocalDate date = LocalDate.of(2023, 12, 12);
+        LocalDate date = LocalDate.of(2023, 10, 25);
         List<TimeSlot> timeSlots = new ArrayList<>();
         timeSlots.add(new TimeSlot());
         List<Helper> availableHelpers = new ArrayList<>();
@@ -303,7 +302,6 @@ public class HelperServiceImplTest {
         Long timeslotId = 999L;
         HelperAppException exception = assertThrows(HelperAppException.class,
                 () -> helperService.getAvailableTechnicians(date, timeslotId));
-
         assertEquals("Invalid timeslotId provided", exception.getMessage());
     }
 

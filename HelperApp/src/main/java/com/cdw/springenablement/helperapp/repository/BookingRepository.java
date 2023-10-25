@@ -33,4 +33,7 @@ public interface BookingRepository extends JpaRepository<Bookings, Long> {
     Bookings findByHelperIdAndTimeSlotAndDate(Long helperId, TimeSlot timeSlot, LocalDate date);
 
     List<Bookings> findByDate(LocalDate date);
+
+
+    List<Bookings> findByActiveIsFalse();
 }

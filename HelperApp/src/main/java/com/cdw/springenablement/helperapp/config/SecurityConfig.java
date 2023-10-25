@@ -1,5 +1,6 @@
 package com.cdw.springenablement.helperapp.config;
 
+import com.cdw.springenablement.helperapp.constants.Roles;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,11 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configure ->
                         configure
-                                .requestMatchers("/auth/register", "/auth/login", "/auth/logout").permitAll()
-                                .requestMatchers("/admin/**").hasAnyAuthority(SuceessConstants.ROLE_ADMIN)
-                                .requestMatchers("/residents/**").hasAnyAuthority(SuceessConstants.ROLE_RESIDENT)
-                                .requestMatchers("/helpers/**").hasAnyAuthority(SuceessConstants.ROLE_HELPER)
+                                .requestMatchers("/auth/register", "/auth/login", "/auth/logout","/pagination").permitAll()
+                                .requestMatchers("/admin/**").hasAnyAuthority(Roles.Role_Admin.name())
+                                .requestMatchers("/residents/**").hasAnyAuthority(Roles.Role_Resident.name())
+                                .requestMatchers("/helpers/appointments").hasAnyAuthority(Roles.Role_Helper.name())
+                                .requestMatchers("/helpers/available-timeslots","/helpers/available-helpers").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())

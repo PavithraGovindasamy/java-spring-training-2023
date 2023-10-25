@@ -52,7 +52,7 @@ public class AuthControllerTest {
         Long id=1L;
         when(userService.registerUser(userDto)).thenReturn(id);
         ResponseEntity<ApiResponseDto> response = authController.registerUser(userDto);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         ApiResponseDto responseBody = response.getBody();
         assertEquals(SuceessConstants.USER_REGISTERED_SUCCESSFULLY_MESSAGE +" User ID: "+id, responseBody.getMessage());
     }

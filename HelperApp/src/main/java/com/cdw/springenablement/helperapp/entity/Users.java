@@ -98,7 +98,6 @@ public class Users implements UserDetails {
         this.gender=gender;
         this.password=password;
         this.roles=roles;
-
     }
 
     public java.util.Set<Roles> getRoles() {

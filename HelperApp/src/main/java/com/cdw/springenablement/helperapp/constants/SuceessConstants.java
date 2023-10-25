@@ -4,7 +4,6 @@ public class SuceessConstants {
     public static final String APPROVED_SUCCESSFULLY_MESSAGE = "Approved successfully";
 
     public static final String REJECTED_SUCCESSFULLY_MESSAGE = "Rejected Successfully";
-    public static final String MEMBER_ADDED_SUCCESSFULLY_MESSAGE = "Member added successfully";
     public static final String RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE = "Resident removed successfully";
     public static final String HELPER_REMOVED_SUCCESSFULLY_MESSAGE = "Helper removed successfully";
     public static final String UPDATED_SUCCESSFULLY_MESSAGE = "Updated Successfully";

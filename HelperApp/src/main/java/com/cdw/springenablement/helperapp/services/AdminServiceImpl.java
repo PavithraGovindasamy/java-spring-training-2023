@@ -4,11 +4,13 @@ import com.cdw.springenablement.helperapp.constants.ErrorConstants;
 import com.cdw.springenablement.helperapp.constants.SuceessConstants;
 import com.cdw.springenablement.helperapp.entity.*;
 import com.cdw.springenablement.helperapp.exception.HelperAppException;
-import com.cdw.springenablement.helperapp.exception.NoContentException;
 import com.cdw.springenablement.helperapp.repository.*;
 import com.cdw.springenablement.helperapp.services.interfaces.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -47,18 +49,22 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public List<ApprovalDto> getApprovalRequest() {
-            List<Users> usersToApprove = userRepository.findByApproved(SuceessConstants.STATUS_REGISTERED);
-            List<ApprovalDto> approvalDtos = usersToApprove.stream().map(user -> {
-                ApprovalDto approvalDto = new ApprovalDto();
-                approvalDto.setUserId(Math.toIntExact(user.getId()));
-                approvalDto.setEmail(user.getEmail());
-                approvalDto.setGender(user.getGender());
-                approvalDto.setFirstName(user.getFirstName());
-                approvalDto.setLastName(user.getLastName());
-                approvalDto.setDateOfBirth(user.getDateOfBirth());
-                return approvalDto;
-            }).collect(Collectors.toList());
-            return approvalDtos;
+        Pageable pageable= PageRequest.of(0,3);
+        List<Users> usersToApprove = userRepository.findByApproved(
+                SuceessConstants.STATUS_REGISTERED,
+                Sort.by(Sort.Order.desc("email"))
+        );
+        List<ApprovalDto> approvalDtos = usersToApprove.stream().map(user -> {
+            ApprovalDto approvalDto = new ApprovalDto();
+            approvalDto.setUserId(Math.toIntExact(user.getId()));
+            approvalDto.setEmail(user.getEmail());
+            approvalDto.setGender(user.getGender());
+            approvalDto.setFirstName(user.getFirstName());
+            approvalDto.setLastName(user.getLastName());
+            approvalDto.setDateOfBirth(user.getDateOfBirth());
+            return approvalDto;
+        }).collect(Collectors.toList());
+        return approvalDtos;
     }
 
 
@@ -148,7 +154,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         List<Bookings> bookings = bookingRepository.findByHelperId(Long.valueOf(helperId));
-        bookings.forEach(book -> bookingRepository.deleteById(book.getId()));
+        bookings.forEach(book -> book.setActive(false));
         helperRepository.delete(helper);
     }
 

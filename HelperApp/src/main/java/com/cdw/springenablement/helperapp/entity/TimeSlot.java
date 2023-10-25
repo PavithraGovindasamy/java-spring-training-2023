@@ -53,8 +53,6 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
-
-
     public List<Bookings> getBookings() {
         return bookings;
     }

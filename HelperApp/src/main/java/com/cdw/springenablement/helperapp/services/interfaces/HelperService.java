@@ -15,7 +15,7 @@ public interface HelperService {
 
     List<TimeSlotDto> getAvailableTechnicians(LocalDate date, Long timeSlotId) ;
 
-    List<TimeSlotDtos> getAllTimeSlots();
+    List<TimeSlotDtos> getAllTimeSlots(Long offSet, Long pageSize);;
 
 
 }

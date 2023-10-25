@@ -137,6 +137,7 @@ public class UserServiceImpl implements UserService {
         newBooking.setHelperId(helperId);
         newBooking.setTimeSlot(timeSlot);
         newBooking.setDate(bookingTechnicianDto.getDate());
+        newBooking.setActive(true);
         bookingRepository.save(newBooking);
     }
 
@@ -194,18 +195,21 @@ public class UserServiceImpl implements UserService {
                 .map(bookings -> {
                     BookingDto bookingDto = new BookingDto();
                     Optional<Helper> helper = helperRepository.findById(bookings.getHelperId());
-                    bookingDto.setBookingId(bookings.getId());
-                    bookingDto.setHelperId(bookings.getHelperId());
-                    bookingDto.setSpecialisation(helper.get().getSpecialization());
-                    TimeSlot timeSlot = bookings.getTimeSlot();
-                    BookingDtoTimeslotDetails timeslots = new BookingDtoTimeslotDetails();
-                    timeslots.setStartTime(timeSlot.getStartTime().toString());
-                    timeslots.setEndTime(timeSlot.getEndTime().toString());
-                    timeslots.setDate(bookings.getDate());
-                    bookingDto.setTimeslotDetails(timeslots);
+                    if (helper.isPresent()) {
+                        bookingDto.isHelperAvailable("true");
+                        bookingDto.setBookingId(bookings.getId());
+                        bookingDto.setHelperId(bookings.getHelperId());
+                        TimeSlot timeSlot = bookings.getTimeSlot();
+                        BookingDtoTimeslotDetails timeslots = new BookingDtoTimeslotDetails();
+                        timeslots.setStartTime(timeSlot.getStartTime().toString());
+                        timeslots.setEndTime(timeSlot.getEndTime().toString());
+                        timeslots.setDate(bookings.getDate());
+                        bookingDto.setTimeslotDetails(timeslots);
+                    } else {
+                        bookingDto.isHelperAvailable("Helper not available");
+                        bookingDto.setBookingId(bookings.getId());
+                    }
                     return bookingDto;
-
-
                 })
                 .collect(Collectors.toList());
 
@@ -213,7 +217,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-}
+    }
 
 
 

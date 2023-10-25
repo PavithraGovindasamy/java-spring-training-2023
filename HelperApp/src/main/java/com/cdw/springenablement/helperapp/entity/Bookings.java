@@ -1,13 +1,10 @@
 package com.cdw.springenablement.helperapp.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 
 /**
@@ -41,6 +38,9 @@ public class Bookings {
     @JoinColumn(name = "timeslot_id")
     @NotNull(message = "TimeSlot ID cannot be null")
     private TimeSlot timeSlot;
+
+    @Column(name = "active_booking")
+    private  boolean active;
 
     public Long getId() {
         return id;

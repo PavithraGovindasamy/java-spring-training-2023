@@ -64,8 +64,9 @@ public class HelperControllerTest {
     @Test
     public void  testAllTimeSlots(){
         List<TimeSlotDtos> timeSlotDtos=new ArrayList<>();
-        when(helperService.getAllTimeSlots()).thenReturn(timeSlotDtos);
-        ResponseEntity<List<TimeSlotDtos>> timeSlotDtoss=helperController.getAllTimeSlots();
+        Long offset=1L;
+        when(helperService.getAllTimeSlots(offset,offset)).thenReturn(timeSlotDtos);
+        ResponseEntity<List<TimeSlotDtos>> timeSlotDtoss=helperController.getAllTimeSlots(offset,offset);
         assertEquals(timeSlotDtos,timeSlotDtoss.getBody());
     }
 

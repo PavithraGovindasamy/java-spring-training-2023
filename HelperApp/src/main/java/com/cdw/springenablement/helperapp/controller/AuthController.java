@@ -1,5 +1,4 @@
 package com.cdw.springenablement.helperapp.controller;
-
 import com.cdw.springenablement.helperapp.client.api.AuthApi;
 import com.cdw.springenablement.helperapp.client.models.*;
 import com.cdw.springenablement.helperapp.constants.ErrorConstants;
@@ -10,9 +9,9 @@ import com.cdw.springenablement.helperapp.services.TokenBlacklistService;
 import com.cdw.springenablement.helperapp.services.interfaces.UserService;
 import com.cdw.springenablement.helperapp.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
 /**
  * Controller class that handles authentication-related endpoints.
  * @Author pavithra

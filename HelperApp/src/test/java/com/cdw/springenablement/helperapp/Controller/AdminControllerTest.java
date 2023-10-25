@@ -81,7 +81,7 @@ public class AdminControllerTest {
         ApiResponseDto expectedResponse = new ApiResponseDto()
                 .message(SuceessConstants.HELPER_REMOVED_SUCCESSFULLY_MESSAGE);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
     }
 
@@ -92,7 +92,7 @@ public class AdminControllerTest {
         ResponseEntity<ApiResponseDto> responseEntity = adminController.removeResident(residentId);
         ApiResponseDto expectedResponse = new ApiResponseDto()
                 .message(SuceessConstants.RESIDENT_REMOVED_SUCCESSFULLY_MESSAGE);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         assertEquals(expectedResponse.getMessage(), responseEntity.getBody().getMessage());
     }
 

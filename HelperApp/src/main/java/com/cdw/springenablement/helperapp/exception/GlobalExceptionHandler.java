@@ -1,5 +1,4 @@
 package com.cdw.springenablement.helperapp.exception;
-
 import com.cdw.springenablement.helperapp.client.models.ApiResponseDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,5 +94,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errors.add(validationError);
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponseDto> handleHelperException(HelperAppException exc){
+        ApiResponseDto helperAppResponse=new ApiResponseDto();
+        helperAppResponse.setMessage(exc.getMessage());
+        helperAppResponse.setStatusCode((long) HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(helperAppResponse,HttpStatus.BAD_REQUEST);
     }
 }

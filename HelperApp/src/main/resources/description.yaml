@@ -1,0 +1,593 @@
+openapi: 3.0.3
+info:
+  title: Helper App Application
+  description: Helper App that allows Residents of an apartment to hire and schedule Home services
+  version: 3.1.2
+servers:
+  - url: https://localhost:8009
+tags:
+  - name : Admin
+    description: Admin Operations are handled here
+  - name : Residents
+    description : Resident basic operations to hire helper are done here
+  - name: Helper
+    description: Helpers Operations are handled here
+  - name : Authentication
+    description : Registration,login ,logout operations are managed here
+
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Create a new user
+      operationId: registerUser
+      requestBody:
+        description: Registering a user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: UnAuthorised access
+
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Authenticate User
+      operationId: loginUser
+      requestBody:
+        description: Authenticate a user with email and password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        '200':
+          description: Authenticated user successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+        '401':
+          description: Unauthorized access
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout a user
+      operationId: logoutUser
+      requestBody:
+        description: Logout a user by invalidating the token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+
+
+  /residents/book-technician:
+    post:
+      tags:
+        - Residents
+      summary: Book a slot with a technician
+      operationId: bookTechnicianSlot
+      requestBody:
+        description: Booking a slot with a technician
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingTechnicianDto'
+      responses:
+        '200':
+          description: Slot Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+  /residents/get-available-technicians:
+    get:
+      tags:
+        - Residents
+      summary: Get Available Technicians
+      operationId: getAvailableTechnicians
+      responses:
+        '200':
+          description: Successful response with a list of available technicians.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlotDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+  /residents/bookings:
+    get:
+      tags:
+        - Residents
+      summary: Get User bookings
+      operationId: getUserBookings
+      responses:
+        '200':
+          description: Successful response with a list of resident bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+
+
+  /admin:
+    put:
+      tags:
+        - Admin
+      summary: Update Helper/Resident information
+      operationId: updateHelper
+      requestBody:
+        description: Updating Helper/Resident  information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelperDto'
+      responses:
+        '200':
+          description: Slot Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+  /admin/remove-resident/{residentId}:
+    delete:
+      tags:
+        - Admin
+      summary: Remove a resident
+      operationId: removeResident
+      parameters:
+        - name: residentId
+          in: path
+          description: ID of the resident to remove
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+  /admin/remove-helper/{helperId}:
+    delete:
+      tags:
+        - Admin
+      summary: Remove a Helper
+      operationId: removeHelper
+      parameters:
+        - name: helperId
+          in: path
+          description: ID of the helper to remove
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+  /admin/get-approval-request:
+    get:
+      tags:
+        - Admin
+      summary: get approval request
+      operationId: getApprovalRequest
+      responses:
+        '200':
+          description: getting approval request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalDto'
+        '401':
+          description: Unauthorised access
+      security:
+        - bearerAuth: []
+
+  /admin/approve-request:
+    put:
+      tags:
+        - Admin
+      summary: approve the request
+      operationId: approveRequest
+      requestBody:
+        required : true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approvalIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+      responses:
+        '200':
+          description: Approved request successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+  /admin/reject-request:
+    put:
+      tags:
+        - Admin
+      summary: reject the request
+      operationId: rejectRequest
+      requestBody:
+        required : true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejectedIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+      responses:
+        '200':
+          description: Rejecting request successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+
+
+  /helpers/appointments:
+    get:
+      tags:
+        - Helpers
+      summary: Get appointments for a helper
+      operationId: getHelperAppointments
+      responses:
+        '200':
+          description: Appointments of helper
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelperAppointmentDto'
+        '401':
+          description: Unauthorized access
+      security:
+        - bearerAuth: []
+
+components:
+  schemas:
+    UserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Pavi
+        lastName:
+          type: string
+          example: G
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1990-01-01
+        gender:
+          type: string
+          example: Female
+        email:
+          type: string
+          format: email
+          example: pavi@gmail.com
+        password:
+          type: string
+          minLength: 8
+          example: password123
+        role:
+          type: array
+          items:
+            type: string
+          example: ["resident"]
+        specialisation:
+          type: string
+          example: plumber
+
+    Roles:
+      type: string
+    BookingTechnicianDto:
+      type: object
+      properties:
+        helperId:
+          type: integer
+          format: int64
+          example: 1
+        timeSlotId:
+          type: integer
+          format: int64
+          example: 10
+        gender:
+          type: string
+          example: Male
+        email:
+          type: string
+          format: email
+          example: pavi@gmail.com
+        password:
+          type: string
+
+    HelperDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 1
+        firstName:
+          type: string
+          example: abc
+        lastName:
+          type: string
+          example : g
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1990-01-01
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    ResidentDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    ApiResponseDto:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int64
+        message:
+          type: string
+    AuthenticationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthenticationResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        email:
+          type: string
+          format: email
+        message:
+          type: string
+    HelperAppointmentDto:
+      type: object
+      properties:
+        appointmentId:
+          type: integer
+          format: int64
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: string
+          format: time
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+
+    TimeSlotDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: string
+          format: time
+        date:
+          type: string
+          format: date
+        helpers:
+          type: array
+          items:
+            $ref: '#/components/schemas/HelperDisplayDto'
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    HelperDisplayDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        specialization:
+          type: string
+    ApprovalDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        email:
+          type: string
+          format: email
+    UserApproveDto:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: string
+    AdminResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+        userIDs:
+          type: string
+
+    BookingDto:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+        helperId:
+          type: integer
+          format: int64
+        specialisation:
+          type: String
+        timeslotDetails:
+          type: object
+          properties:
+            startTime:
+              type: string
+            endTime:
+              type: string
+            date:
+              type: string
+              format: date
+
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+
+
+
+
+
